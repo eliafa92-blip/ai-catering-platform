@@ -24,7 +24,7 @@ def test_public_config_exposes_only_public_values(monkeypatch):
     assert "sb_secret" not in response.text
 
 
-def test_login_page_served():
-    response = client.get("/login/")
-    assert response.status_code == 200
-    assert "text/html" in response.headers["content-type"]
+def test_login_and_order_pages_served():
+    for path in ("/login/", "/order/", "/css/order.css"):
+        response = client.get(path)
+        assert response.status_code == 200

@@ -33,6 +33,7 @@ DEMO_USERS = [
     {"email": "yossi@example.com", "full_name": "יוסי לוי", "phone": "054-2345678"},
     {"email": "noa@example.com", "full_name": "נועה מזרחי", "phone": "050-3456789"},
     {"email": "avi@example.com", "full_name": "אבי פרץ", "phone": "053-4567890"},
+    {"email": "demo@example.com", "full_name": "משתמש דמו", "phone": "058-5678901"},
 ]
 
 
