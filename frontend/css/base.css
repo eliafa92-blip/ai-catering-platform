@@ -40,3 +40,35 @@ main {
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* ---- Shared UI pieces (login, order lists) ---- */
+.narrow { max-width: 420px; }
+.muted { color: var(--color-muted); }
+.error { color: var(--color-danger); margin: 0; }
+.card { background: var(--color-surface); border-radius: var(--radius); box-shadow: var(--shadow-1); padding: var(--space-4); margin-block-end: var(--space-4); }
+.stack { display: flex; flex-direction: column; gap: var(--space-2); }
+label { font-weight: 600; font-size: 0.9rem; }
+input { font: inherit; padding: var(--space-3); border: 1px solid #d4cec5; border-radius: 8px; min-height: 44px; }
+button { font: inherit; min-height: 44px; padding: 0 var(--space-4); border-radius: 8px; border: 1px solid var(--color-accent); background: var(--color-accent); color: #fff; cursor: pointer; }
+button.secondary, .filters button, .demo-users button { background: var(--color-surface); color: var(--color-accent); }
+button.link { background: none; border: none; color: var(--color-accent); text-decoration: underline; min-height: 0; padding: 0; }
+button:disabled { opacity: 0.6; cursor: progress; }
+.filters { display: flex; gap: var(--space-2); margin-block: var(--space-4); }
+.filters button[aria-pressed="true"] { background: var(--color-accent); color: #fff; }
+.demo-users { list-style: none; padding: 0; display: grid; gap: var(--space-2); }
+.demo-users button { min-height: 36px; margin-inline-end: var(--space-2); }
+.topbar { display: flex; gap: var(--space-4); align-items: center; padding: var(--space-3) var(--space-4); background: var(--color-surface); box-shadow: var(--shadow-1); }
+.topbar .muted { margin-inline-start: auto; }
+.table-wrap { overflow-x: auto; background: var(--color-surface); border-radius: var(--radius); box-shadow: var(--shadow-1); }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: start; padding: var(--space-3); border-block-end: 1px solid #eee8df; vertical-align: middle; }
+td button { min-height: 36px; margin-inline-end: var(--space-1); }
+.num { font-variant-numeric: tabular-nums; text-align: end; }
+.badge { font-size: 0.8rem; padding: 2px 8px; border-radius: 99px; background: #eee8df; }
+.status { font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.status-draft { color: var(--color-muted); }
+.status-pending_approval { color: var(--color-warning); }
+.status-approved { color: var(--color-success); }
+.status-rejected { color: var(--color-danger); }
+@keyframes flash { from { background: #fbf0d9; } to { background: transparent; } }
+.flash { animation: flash 2s ease-out; }

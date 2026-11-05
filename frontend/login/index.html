@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in</title>
+  <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+  <main class="narrow">
+    <h1>Sign in</h1>
+    <form id="login" class="card stack" novalidate>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <p id="error" class="error" role="alert" hidden></p>
+      <button id="submit" type="submit">Sign in</button>
+    </form>
+
+    <details class="card">
+      <summary>Demo users (dev project)</summary>
+      <p class="muted">All demo users share the password in <code>DEMO_USER_PASSWORD</code> in your local <code>.env</code>.</p>
+      <ul class="demo-users">
+        <li><button type="button" data-email="owner@example.com">owner@example.com</button> business owner</li>
+        <li><button type="button" data-email="dana@example.com">dana@example.com</button> customer</li>
+        <li><button type="button" data-email="yossi@example.com">yossi@example.com</button> customer</li>
+        <li><button type="button" data-email="noa@example.com">noa@example.com</button> customer</li>
+        <li><button type="button" data-email="avi@example.com">avi@example.com</button> customer</li>
+        <li><button type="button" data-email="demo@example.com">demo@example.com</button> customer</li>
+      </ul>
+    </details>
+  </main>
+  <script type="module">
+    import { getClient, homeFor } from "/js/supabase.js";
+
+    const form = document.getElementById("login");
+    const errorEl = document.getElementById("error");
+    const submit = document.getElementById("submit");
+    const next = new URLSearchParams(location.search).get("next");
+    const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+
+    const supabase = await getClient();
+    const { data } = await supabase.auth.getUser();
+    if (data?.user) location.replace(safeNext ?? homeFor(data.user));
+
+    document.querySelectorAll("[data-email]").forEach((b) =>
+      b.addEventListener("click", () => {
+        form.email.value = b.dataset.email;
+        form.password.focus();
+      })
+    );
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorEl.hidden = true;
+      submit.disabled = true;
+      submit.textContent = "Signing in…";
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: form.email.value.trim(),
+        password: form.password.value,
+      });
+      if (error) {
+        errorEl.textContent = error.message === "Invalid login credentials"
+          ? "Wrong email or password. Check both and try again."
+          : error.message;
+        errorEl.hidden = false;
+        submit.disabled = false;
+        submit.textContent = "Sign in";
+        return;
+      }
+      location.replace(safeNext ?? homeFor(data.user));
+    });
+  </script>
+</body>
+</html>

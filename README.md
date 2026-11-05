@@ -19,7 +19,7 @@ Ordering and management web app for a **single catering business**. Customers pl
 ```
 backend/        FastAPI app (api, core, models, schemas, services, repositories, agents) + tests
 frontend/       customer/ and admin/ pages, css/, js/, assets/
-database/       migrations/ (SQL, Supabase CLI format — first migration in Phase 2)
+supabase/       Supabase CLI project: migrations/ (schema, RLS, Storage, Realtime) and seed.sql
 docs/           PRD, architecture, schema, API, AI agent, UX/UI, ADRs, open decisions
 .github/        CI workflow
 Dockerfile      Production image used by Railway
@@ -62,7 +62,7 @@ uv run pytest
 | `httpx` (dev) | Needed by FastAPI's `TestClient` |
 | `ruff` (dev) | Mandated linter/formatter |
 
-`sqlalchemy`, `psycopg`, and the Supabase client are added in Phase 2, when database code exists.
+The browser loads `supabase-js` (pinned, from jsDelivr) for login, data access through RLS and Realtime. `httpx` is also used by the dev seed script.
 
 ## Branches and environments
 
@@ -76,9 +76,36 @@ uv run pytest
 - Production deploys are manual and need explicit approval.
 - Each Railway environment holds its own variables from `.env.example`. **Never commit secrets.** The service-role key stays server-side.
 
-## Railway / Supabase status
+## Supabase (database, auth, storage, realtime)
 
-Configuration templates only (`railway.json`, `Dockerfile`, `.env.example`). No Railway project or Supabase project is connected yet. That is planned for Phase 6.
+The schema lives in `supabase/migrations/` and is applied to the hosted **dev** project with the Supabase CLI (v3). There is no local Supabase stack.
+
+```bash
+supabase link <dev-project-ref>                # once
+supabase db push --remote --dry-run            # see what would change
+supabase db push --remote --yes                # apply new migrations
+supabase db advisors --remote                  # security and performance checks
+```
+
+What the migrations set up:
+
+- **18 tables** (see `docs/DATABASE_SCHEMA.md`), with prices frozen and status history logged by triggers when an order is submitted, approved or rejected.
+- **RLS on every table.** Anonymous visitors read the catalog. Customers read and edit only their own events and draft orders. The business owner (`app_metadata.role = "owner"`) reads everything, writes the catalog and approves or rejects orders. The backend's secret key bypasses RLS.
+- **Storage:** public bucket `dish-images` (JPEG/PNG/WebP, 5 MB). Only the owner can upload. `dishes.image_path` holds the object path.
+- **Realtime** on `orders`, `order_items`, `order_status_history`, `ai_messages`, `ai_change_proposals`, `dishes`, `blocked_dates`. RLS applies, so customers only receive their own changes.
+
+### Synthetic data and demo users (dev only)
+
+```bash
+cd backend
+uv run python scripts/seed_dev.py
+```
+
+This creates the demo users (`owner@example.com`, `dana@`, `yossi@`, `noa@`, `avi@example.com`, all with the password in `DEMO_USER_PASSWORD`), wipes and rebuilds the data from `supabase/seed.sql`, and uploads a placeholder photo for each dish. It refuses to run unless `APP_ENV=development` and `SUPABASE_URL` matches the linked project.
+
+Sign in at http://127.0.0.1:8000/login/.
+
+Railway is not connected yet (planned for Phase 6).
 
 ## Documentation
 

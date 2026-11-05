@@ -7,15 +7,95 @@
   <link rel="stylesheet" href="/css/base.css">
 </head>
 <body>
+  <header class="topbar">
+    <strong>Catering · Business</strong>
+    <span id="who" class="muted"></span>
+    <button id="signout" type="button" class="link">Sign out</button>
+  </header>
   <main>
-    <h1>Business dashboard</h1>
-    <p>Placeholder. Screens are built in later phases (see docs/UX_UI_SPEC.md).</p>
-    <p>API status: <span id="status" aria-live="polite">checking…</span></p>
+    <h1>Orders</h1>
+    <p class="muted">New and changed orders appear live. <span id="live" class="badge" aria-live="polite">connecting…</span></p>
+    <div class="filters" role="group" aria-label="Filter by status">
+      <button type="button" data-filter="pending_approval" aria-pressed="true">Awaiting approval</button>
+      <button type="button" data-filter="all" aria-pressed="false">All</button>
+    </div>
+    <p id="error" class="error" role="alert" hidden></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Customer</th><th>Event</th><th>Date</th><th>Guests</th><th>Status</th><th>Total</th><th></th></tr></thead>
+        <tbody id="orders"><tr><td colspan="7" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </div>
   </main>
   <script type="module">
-    import { api } from "/js/api.js";
-    const el = document.getElementById("status");
-    api("/health").then((r) => (el.textContent = r.status)).catch((e) => (el.textContent = e.message));
+    import { requireUser, signOut, STATUS_LABELS, money } from "/js/supabase.js";
+
+    const { supabase, user } = await requireUser({ owner: true });
+    document.getElementById("who").textContent = user.email;
+    document.getElementById("signout").onclick = signOut;
+    const body = document.getElementById("orders");
+    const errorEl = document.getElementById("error");
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    let filter = "pending_approval";
+
+    async function load() {
+      let query = supabase
+        .from("orders")
+        .select("id, status, total, customers(full_name), events(event_type, event_date, adults, children)")
+        .order("requested_at");
+      if (filter !== "all") query = query.eq("status", filter);
+      const { data, error } = await query;
+      if (error) return showError(error.message);
+      body.innerHTML = data.length
+        ? data.map((o) => `<tr>
+            <td>${esc(o.customers?.full_name)}</td>
+            <td>${esc(o.events?.event_type)}</td>
+            <td>${esc(o.events?.event_date)}</td>
+            <td class="num">${(o.events?.adults ?? 0) + (o.events?.children ?? 0)}</td>
+            <td><span class="status status-${o.status}">${STATUS_LABELS[o.status]}</span></td>
+            <td class="num">${money(o.total)}</td>
+            <td>${o.status === "pending_approval"
+              ? `<button type="button" data-id="${o.id}" data-to="approved">Approve</button>
+                 <button type="button" data-id="${o.id}" data-to="rejected" class="secondary">Reject</button>`
+              : ""}</td></tr>`).join("")
+        : `<tr><td colspan="7" class="muted">Nothing here.</td></tr>`;
+    }
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.hidden = false;
+    }
+
+    body.addEventListener("click", async (event) => {
+      const b = event.target.closest("button[data-to]");
+      if (!b) return;
+      errorEl.hidden = true;
+      b.disabled = true;
+      // The database checks the transition and records it in order_status_history.
+      const { error } = await supabase.from("orders").update({ status: b.dataset.to }).eq("id", b.dataset.id);
+      if (error) {
+        b.disabled = false;
+        return showError(error.message);
+      }
+      await load();
+    });
+
+    document.querySelectorAll("[data-filter]").forEach((b) =>
+      b.addEventListener("click", async () => {
+        filter = b.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+        await load();
+      })
+    );
+
+    await load();
+
+    supabase
+      .channel("all-orders")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => load())
+      .subscribe((status) => {
+        document.getElementById("live").textContent = status === "SUBSCRIBED" ? "live" : status.toLowerCase();
+      });
   </script>
 </body>
 </html>
