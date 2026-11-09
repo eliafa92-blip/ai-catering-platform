@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My orders</title>
+  <link rel="stylesheet" href="/css/base.css">
+</head>
+<body class="plain">
+  <header class="topbar">
+    <strong>Catering</strong>
+    <span id="who" class="muted"></span>
+    <button id="signout" type="button" class="link">Sign out</button>
+  </header>
+  <main>
+    <h1>My orders</h1>
+    <p><a href="/order/">+ New order</a></p>
+    <p class="muted">Status changes from the business appear here live. <span id="live" class="badge" aria-live="polite">connecting…</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Total</th><th>Note from the business</th></tr></thead>
+        <tbody id="orders"><tr><td colspan="5" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+  <script type="module">
+    import { requireUser, signOut, STATUS_LABELS, money } from "/js/supabase.js";
+
+    const { supabase, user } = await requireUser();
+    document.getElementById("signout").onclick = signOut;
+    const body = document.getElementById("orders");
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+    const { data: me } = await supabase.from("customers").select("full_name").single();
+    document.getElementById("who").textContent = me?.full_name ?? user.email;
+
+    async function load() {
+      // RLS returns only this customer's orders.
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id, status, total, decision_note, events(event_type, event_date)")
+        .order("requested_at", { ascending: false });
+      if (error) {
+        body.innerHTML = `<tr><td colspan="5" class="error">${esc(error.message)}</td></tr>`;
+        return;
+      }
+      body.innerHTML = data.length
+        ? data.map((o) => `<tr id="o-${o.id}">
+            <td>${esc(o.events?.event_type)}</td>
+            <td>${esc(o.events?.event_date)}</td>
+            <td><span class="status status-${o.status}">${STATUS_LABELS[o.status]}</span></td>
+            <td class="num">${money(o.total)}</td>
+            <td>${esc(o.decision_note)}</td></tr>`).join("")
+        : `<tr><td colspan="5" class="muted">No orders yet.</td></tr>`;
+    }
+
+    await load();
+
+    // Realtime: RLS means this only delivers changes to this customer's own orders.
+    supabase
+      .channel("my-orders")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, async (change) => {
+        await load();
+        const row = document.getElementById(`o-${change.new?.id}`);
+        row?.classList.add("flash");
+      })
+      .subscribe((status) => {
+        document.getElementById("live").textContent = status === "SUBSCRIBED" ? "live" : status.toLowerCase();
+      });
+  </script>
+</body>
+</html>

@@ -19,7 +19,7 @@ export function getClient() {
 // The owner role lives in app_metadata, which users cannot edit.
 export const isOwner = (user) => user?.app_metadata?.role === "owner";
 
-export const homeFor = (user) => (isOwner(user) ? "/admin/" : "/customer/");
+export const homeFor = (user) => (isOwner(user) ? "/admin/" : "/orders/");
 
 /** Returns the signed-in user, or sends the visitor to the login page. */
 export async function requireUser({ owner = false } = {}) {
@@ -31,7 +31,7 @@ export async function requireUser({ owner = false } = {}) {
     return new Promise(() => {}); // stop the page while redirecting
   }
   if (owner && !isOwner(user)) {
-    location.replace("/customer/");
+    location.replace("/orders/");
     return new Promise(() => {});
   }
   return { supabase, user };

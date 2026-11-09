@@ -25,6 +25,6 @@ def test_public_config_exposes_only_public_values(monkeypatch):
 
 
 def test_login_and_order_pages_served():
-    for path in ("/login/", "/order/", "/css/order.css"):
+    for path in ("/login/", "/order/", "/orders/", "/customer/", "/css/order.css"):
         response = client.get(path)
         assert response.status_code == 200
