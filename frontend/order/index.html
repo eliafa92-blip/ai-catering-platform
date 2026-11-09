@@ -53,13 +53,13 @@
                   <option value="other">אחר</option>
                 </select>
                 <input id="event-type-other" type="text" placeholder="איזה אירוע?" aria-label="סוג אירוע אחר" hidden>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-event_type" hidden></span>
               </div>
               <div class="field" data-field="event_date">
                 <label for="event-date">תאריך האירוע</label>
                 <input id="event-date" type="date">
                 <span class="hint" id="date-hint"></span>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-event_date" hidden></span>
               </div>
             </div>
           </div>
@@ -74,7 +74,7 @@
                   <input id="adults" type="number" inputmode="numeric" min="0" value="30">
                   <button type="button" data-inc="adults" aria-label="עוד מבוגרים">+</button>
                 </div>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-adults" hidden></span>
               </div>
               <div class="field" data-field="children">
                 <label for="children">ילדים</label>
@@ -94,7 +94,7 @@
                   <input id="vegetarian" type="number" inputmode="numeric" min="0" value="0">
                   <button type="button" data-inc="vegetarian" aria-label="עוד צמחונים">+</button>
                 </div>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-vegetarian" hidden></span>
               </div>
               <div class="field" data-field="vegan">
                 <label for="vegan">טבעונים</label>
@@ -103,7 +103,7 @@
                   <input id="vegan" type="number" inputmode="numeric" min="0" value="0">
                   <button type="button" data-inc="vegan" aria-label="עוד טבעונים">+</button>
                 </div>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-vegan" hidden></span>
               </div>
               <div class="field" data-field="restricted">
                 <label for="restricted">עם הגבלה תזונתית אחרת</label>
@@ -112,7 +112,7 @@
                   <input id="restricted" type="number" inputmode="numeric" min="0" value="0">
                   <button type="button" data-inc="restricted" aria-label="עוד אורחים עם הגבלה">+</button>
                 </div>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-restricted" hidden></span>
               </div>
             </div>
             <div class="field" style="margin-block-start: var(--space-4)">
@@ -132,7 +132,7 @@
               <div class="field" data-field="slot">
                 <label for="slot">שעה</label>
                 <select id="slot"><option value="">בחרו קודם תאריך</option></select>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-slot" hidden></span>
               </div>
             </div>
             <div class="fields two" id="delivery-fields" hidden style="margin-block-start: var(--space-4)">
@@ -140,12 +140,12 @@
                 <label for="zone">אזור משלוח</label>
                 <select id="zone"><option value="">בחרו אזור…</option></select>
                 <span class="hint" id="zone-hint"></span>
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-zone" hidden></span>
               </div>
               <div class="field" data-field="address">
                 <label for="address">כתובת למשלוח</label>
                 <input id="address" type="text" autocomplete="street-address" placeholder="רחוב, מספר, עיר">
-                <span class="field-error" hidden></span>
+                <span class="field-error" id="err-address" hidden></span>
               </div>
             </div>
           </div>
@@ -329,6 +329,15 @@
       const err = el.querySelector(".field-error");
       err.textContent = message || "";
       err.hidden = !message;
+      // Point the field's control at its hint and/or error text, so a screen reader hears
+      // why it's invalid, not just that it is (same pattern as customer/views/event.js).
+      const ctrl = el.querySelector("input, select");
+      if (ctrl) {
+        ctrl.setAttribute("aria-invalid", String(!!message));
+        const hint = el.querySelector(".hint");
+        const ids = [hint?.id, err.id].filter(Boolean).join(" ");
+        ctrl.setAttribute("aria-describedby", ids);
+      }
     }
 
     function validateEvent() {
