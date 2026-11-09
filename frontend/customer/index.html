@@ -1,21 +1,34 @@
 <!doctype html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Plan your event</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff9ed">
+  <title>yumm.ai | הזמנת קייטרינג</title>
+  <link rel="preload" href="/assets/fonts/heebo-hebrew-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/playpen-sans-hebrew-hebrew-800.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/customer.css">
+  <link rel="stylesheet" href="/css/motion.css">
 </head>
 <body>
-  <main>
-    <h1>Plan your event</h1>
-    <p>Placeholder. Screens are built in later phases (see docs/UX_UI_SPEC.md).</p>
-    <p>API status: <span id="status" aria-live="polite">checking…</span></p>
+  <a class="skip-link" href="#app">דילוג לתוכן</a>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <!-- Name confirmed: yumm.ai. A designed logo is still pending (OPEN_DECISIONS #20); this is the typographic wordmark. -->
+      <p class="brand wordmark"><a class="brand-link" href="/" aria-label="yumm.ai, לעמוד הבית"><bdi>yumm<span class="dot">.</span>ai</bdi></a></p>
+      <nav id="stepper" class="stepper-nav" aria-label="שלבי ההזמנה"></nav>
+    </div>
+  </header>
+
+  <main id="app" class="app" tabindex="-1">
+    <noscript><p>האתר דורש JavaScript כדי להציג את תהליך ההזמנה.</p></noscript>
   </main>
-  <script type="module">
-    import { api } from "/js/api.js";
-    const el = document.getElementById("status");
-    api("/health").then((r) => (el.textContent = r.status)).catch((e) => (el.textContent = e.message));
-  </script>
+
+  <div id="chat-root" hidden></div>
+  <div id="announce" class="visually-hidden" aria-live="polite" role="status"></div>
+
+  <script type="module" src="/js/customer/main.js"></script>
 </body>
 </html>

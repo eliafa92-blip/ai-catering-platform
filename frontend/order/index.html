@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>הזמנת קייטרינג</title>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/order.css">
+</head>
+<body>
+  <header class="order-header">
+    <span class="brand">קייטרינג</span>
+    <nav aria-label="חשבון">
+      <a href="/orders/">ההזמנות שלי</a>
+      <span id="who" class="muted"></span>
+      <button id="signout" type="button" class="link">יציאה</button>
+    </nav>
+  </header>
+
+  <main class="order-page">
+    <ol class="stepper" id="stepper" aria-label="שלבי ההזמנה">
+      <li data-step="1">פרטי האירוע</li>
+      <li data-step="2">בחירת מנות</li>
+      <li data-step="3">סיכום ושליחה</li>
+    </ol>
+
+    <p id="load-error" class="notice error" role="alert" hidden></p>
+    <p id="loading" class="loading">טוען את התפריט…</p>
+
+    <div class="order-layout" id="layout" hidden>
+      <div>
+        <!-- C1: event configuration -->
+        <section class="step" id="step-1" aria-labelledby="h-step-1">
+          <h2 id="h-step-1">פרטי האירוע</h2>
+          <p class="lead">ספרו לנו על האירוע, ונציג מנות ומחירים שמתאימים לו.</p>
+
+          <div class="panel">
+            <h3>האירוע</h3>
+            <div class="fields two">
+              <div class="field" data-field="event_type">
+                <label for="event-type">סוג האירוע</label>
+                <select id="event-type">
+                  <option value="">בחרו…</option>
+                  <option>בר מצווה</option>
+                  <option>בת מצווה</option>
+                  <option>ברית</option>
+                  <option>יום הולדת</option>
+                  <option>חתונה קטנה</option>
+                  <option>אירוסין</option>
+                  <option>שבת חתן</option>
+                  <option>חנוכת בית</option>
+                  <option>מסיבת יום נישואין</option>
+                  <option value="other">אחר</option>
+                </select>
+                <input id="event-type-other" type="text" placeholder="איזה אירוע?" aria-label="סוג אירוע אחר" hidden>
+                <span class="field-error" hidden></span>
+              </div>
+              <div class="field" data-field="event_date">
+                <label for="event-date">תאריך האירוע</label>
+                <input id="event-date" type="date">
+                <span class="hint" id="date-hint"></span>
+                <span class="field-error" hidden></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>אורחים</h3>
+            <div class="fields two">
+              <div class="field" data-field="adults">
+                <label for="adults">מבוגרים</label>
+                <div class="counter">
+                  <button type="button" data-dec="adults" aria-label="פחות מבוגרים">−</button>
+                  <input id="adults" type="number" inputmode="numeric" min="0" value="30">
+                  <button type="button" data-inc="adults" aria-label="עוד מבוגרים">+</button>
+                </div>
+                <span class="field-error" hidden></span>
+              </div>
+              <div class="field" data-field="children">
+                <label for="children">ילדים</label>
+                <div class="counter">
+                  <button type="button" data-dec="children" aria-label="פחות ילדים">−</button>
+                  <input id="children" type="number" inputmode="numeric" min="0" value="0">
+                  <button type="button" data-inc="children" aria-label="עוד ילדים">+</button>
+                </div>
+              </div>
+            </div>
+            <p class="hint" style="margin-block: var(--space-4) var(--space-2)">מתוך האורחים, כמה מהם:</p>
+            <div class="fields three">
+              <div class="field" data-field="vegetarian">
+                <label for="vegetarian">צמחונים</label>
+                <div class="counter">
+                  <button type="button" data-dec="vegetarian" aria-label="פחות צמחונים">−</button>
+                  <input id="vegetarian" type="number" inputmode="numeric" min="0" value="0">
+                  <button type="button" data-inc="vegetarian" aria-label="עוד צמחונים">+</button>
+                </div>
+                <span class="field-error" hidden></span>
+              </div>
+              <div class="field" data-field="vegan">
+                <label for="vegan">טבעונים</label>
+                <div class="counter">
+                  <button type="button" data-dec="vegan" aria-label="פחות טבעונים">−</button>
+                  <input id="vegan" type="number" inputmode="numeric" min="0" value="0">
+                  <button type="button" data-inc="vegan" aria-label="עוד טבעונים">+</button>
+                </div>
+                <span class="field-error" hidden></span>
+              </div>
+              <div class="field" data-field="restricted">
+                <label for="restricted">עם הגבלה תזונתית אחרת</label>
+                <div class="counter">
+                  <button type="button" data-dec="restricted" aria-label="פחות אורחים עם הגבלה">−</button>
+                  <input id="restricted" type="number" inputmode="numeric" min="0" value="0">
+                  <button type="button" data-inc="restricted" aria-label="עוד אורחים עם הגבלה">+</button>
+                </div>
+                <span class="field-error" hidden></span>
+              </div>
+            </div>
+            <div class="field" style="margin-block-start: var(--space-4)">
+              <label for="notes">הערות תזונתיות לבעל העסק</label>
+              <textarea id="notes" placeholder="למשל: שני אורחים עם אלרגיה לאגוזים"></textarea>
+              <span class="hint">ההערות מועברות לבעל העסק כפי שהן.</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>איסוף או משלוח</h3>
+            <div class="segmented" role="radiogroup" aria-label="איסוף או משלוח">
+              <label><input type="radio" name="fulfillment" value="pickup" checked> איסוף עצמי</label>
+              <label><input type="radio" name="fulfillment" value="delivery"> משלוח</label>
+            </div>
+            <div class="fields two" style="margin-block-start: var(--space-4)">
+              <div class="field" data-field="slot">
+                <label for="slot">שעה</label>
+                <select id="slot"><option value="">בחרו קודם תאריך</option></select>
+                <span class="field-error" hidden></span>
+              </div>
+            </div>
+            <div class="fields two" id="delivery-fields" hidden style="margin-block-start: var(--space-4)">
+              <div class="field" data-field="zone">
+                <label for="zone">אזור משלוח</label>
+                <select id="zone"><option value="">בחרו אזור…</option></select>
+                <span class="hint" id="zone-hint"></span>
+                <span class="field-error" hidden></span>
+              </div>
+              <div class="field" data-field="address">
+                <label for="address">כתובת למשלוח</label>
+                <input id="address" type="text" autocomplete="street-address" placeholder="רחוב, מספר, עיר">
+                <span class="field-error" hidden></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- C2: dish catalog -->
+        <section class="step" id="step-2" aria-labelledby="h-step-2" hidden>
+          <h2 id="h-step-2">בחירת מנות</h2>
+          <p class="lead">בחרו מנות מהתפריט וקבעו כמויות. המחיר מתעדכן מיד בסיכום.</p>
+          <div class="menu-tools">
+            <div class="chips" id="cats" role="group" aria-label="קטגוריות"></div>
+            <div class="toggles">
+              <label><input type="checkbox" id="f-veg"> רק צמחוני</label>
+              <label><input type="checkbox" id="f-vegan"> רק טבעוני</label>
+            </div>
+          </div>
+          <p class="notice info">"ללא" מופיע רק כשבעל העסק סימן זאת במפורש. אלרגן שלא מופיע ליד מנה הוא לא ידוע, ולא בהכרח לא קיים.</p>
+          <p class="notice warn kashrut-warning" hidden>ההזמנה כוללת גם מנות בשריות וגם מנות חלביות.</p>
+          <div id="menu"></div>
+        </section>
+
+        <!-- C3: review & submit -->
+        <section class="step" id="step-3" aria-labelledby="h-step-3" hidden>
+          <h2 id="h-step-3">סיכום ושליחה</h2>
+          <p class="lead">בדקו את הפרטים. אחרי השליחה הבקשה עוברת לאישור בעל העסק.</p>
+          <div class="panel">
+            <h3>פרטי האירוע</h3>
+            <dl class="details-list" id="review-details"></dl>
+          </div>
+          <div class="panel">
+            <h3>המנות</h3>
+            <div style="overflow-x:auto">
+              <table class="review-table">
+                <thead><tr><th>מנה</th><th>כמות</th><th class="num">מחיר ליחידה</th><th class="num">סה"כ</th></tr></thead>
+                <tbody id="review-lines"></tbody>
+                <tfoot id="review-totals"></tfoot>
+              </table>
+            </div>
+          </div>
+          <p class="notice warn kashrut-warning" hidden>ההזמנה כוללת גם מנות בשריות וגם מנות חלביות.</p>
+          <p class="notice info">המחיר המוצג מחושב לפי המחירון הנוכחי. ברגע השליחה המחירים ננעלים, והסכום לא ישתנה גם אם המחירון יתעדכן. ההזמנה תאושר רק אחרי שבעל העסק יאשר אותה.</p>
+          <p id="submit-error" class="notice error" role="alert" hidden></p>
+        </section>
+
+        <!-- C5: submitted -->
+        <section class="step confirm" id="step-done" hidden aria-live="polite">
+          <h2>בקשת ההזמנה נשלחה</h2>
+          <span class="status-pill">ממתינה לאישור העסק</span>
+          <p class="total" id="done-total"></p>
+          <p class="muted">זו עדיין לא הזמנה מאושרת. כשבעל העסק יאשר או ידחה את הבקשה, הסטטוס יתעדכן בעמוד "ההזמנות שלי".</p>
+          <div class="actions">
+            <a class="button" href="/orders/">להזמנות שלי</a>
+            <button type="button" id="new-order">הזמנה חדשה</button>
+          </div>
+        </section>
+      </div>
+
+      <aside class="summary" id="summary" aria-label="סיכום ההזמנה">
+        <h3>ההזמנה שלכם</h3>
+        <p class="event-brief" id="brief"></p>
+        <ul class="lines" id="lines"></ul>
+        <div class="totals" aria-live="polite">
+          <div class="row"><span>מנות</span><span id="t-sub"></span></div>
+          <div class="row"><span>משלוח</span><span id="t-fee"></span></div>
+          <div class="row grand"><span>סה"כ משוער</span><span id="t-total"></span></div>
+          <span class="note" id="t-note"></span>
+        </div>
+        <div class="summary-actions">
+          <button type="button" id="back" class="secondary" hidden>חזרה</button>
+          <button type="button" id="next">המשך</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script type="module">
+    import { requireUser, signOut, isOwner, money } from "/js/supabase.js";
+
+    const { supabase, user } = await requireUser();
+    if (isOwner(user)) location.replace("/admin/");
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const isoDate = (d) => d.toLocaleDateString("sv-SE");
+    const fmtDate = (s) => new Date(`${s}T12:00`).toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const num = (v) => Math.max(0, parseInt(v, 10) || 0);
+    $("signout").onclick = signOut;
+
+    // ------------------------------------------------------------ load data (RLS: public catalog + own customer row)
+    const today = new Date();
+    const results = await Promise.all([
+      supabase.from("dish_categories").select("id,name,sort_order").eq("is_active", true).order("sort_order"),
+      supabase.from("dishes")
+        .select("id,category_id,name,description,image_path,pricing_unit,unit_price,unit_label,min_quantity,dish_dietary(kashrut_class,is_vegetarian,is_vegan),dish_allergens(status,allergens(name))")
+        .eq("is_available", true).order("name"),
+      supabase.from("time_slots").select("*").eq("is_active", true).order("start_time"),
+      supabase.from("delivery_zones").select("id,name,fee,definition").eq("is_active", true).order("fee"),
+      supabase.from("blocked_dates").select("date,reason").gte("date", isoDate(today)),
+      supabase.from("business_settings").select("*").maybeSingle(),
+      supabase.from("customers").select("id,full_name").maybeSingle(),
+    ]);
+    $("loading").hidden = true;
+    const failed = results.find((r) => r.error);
+    if (failed) {
+      $("load-error").textContent = `לא הצלחנו לטעון את התפריט: ${failed.error.message}`;
+      $("load-error").hidden = false;
+      throw failed.error;
+    }
+    const [categories, dishes, slots, zones, blocked, settings, me] = results.map((r) => r.data);
+    if (!me) {
+      $("load-error").textContent = "לחשבון הזה אין פרופיל לקוח, ולכן אי אפשר להזמין ממנו.";
+      $("load-error").hidden = false;
+      throw new Error("no customer row");
+    }
+    $("who").textContent = me.full_name;
+    $("layout").hidden = false;
+
+    const dishById = new Map(dishes.map((d) => [d.id, d]));
+    const blockedByDate = new Map(blocked.map((b) => [b.date, b.reason]));
+    const leadDays = settings?.min_lead_days ?? 0;
+    const minDate = new Date(today);
+    minDate.setDate(minDate.getDate() + leadDays);
+    $("event-date").min = isoDate(minDate);
+    $("date-hint").textContent = leadDays ? `אפשר להזמין לפחות ${leadDays} ימים מראש.` : "";
+    zones.forEach((z) => $("zone").add(new Option(`${z.name} (${money(z.fee)})`, z.id)));
+
+    // ------------------------------------------------------------ state (kept in localStorage so a refresh keeps progress)
+    const DRAFT_KEY = `order-draft:${user.id}`;
+    const state = { step: 1, category: "all", items: {} };
+    try {
+      const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+      if (saved) {
+        Object.assign(state.items, Object.fromEntries(Object.entries(saved.items || {}).filter(([id]) => dishById.has(id))));
+        for (const [id, v] of Object.entries(saved.fields || {})) if ($(id)) $(id).value = v;
+        state.savedSlot = saved.fields?.slot;
+        if (saved.fulfillment) document.querySelector(`[name=fulfillment][value=${saved.fulfillment}]`).checked = true;
+      }
+    } catch {}
+
+    const FIELD_IDS = ["event-type", "event-type-other", "event-date", "adults", "children", "vegetarian", "vegan", "restricted", "notes", "slot", "zone", "address"];
+    function persist() {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          items: state.items,
+          fulfillment: fulfillment(),
+          fields: Object.fromEntries(FIELD_IDS.map((id) => [id, $(id).value])),
+        }));
+      } catch {}
+    }
+
+    const fulfillment = () => document.querySelector("[name=fulfillment]:checked").value;
+    const guests = () => num($("adults").value) + num($("children").value);
+    const eventType = () => ($("event-type").value === "other" ? $("event-type-other").value.trim() : $("event-type").value);
+    const zone = () => zones.find((z) => z.id === $("zone").value);
+
+    // ------------------------------------------------------------ step 1: event
+    function fillSlots() {
+      const date = $("event-date").value;
+      const keep = $("slot").value || state.savedSlot;
+      state.savedSlot = null;
+      const sel = $("slot");
+      sel.length = 0;
+      if (!date) return sel.add(new Option("בחרו קודם תאריך", ""));
+      const weekday = new Date(`${date}T12:00`).getDay();
+      const options = slots.filter((s) => s.fulfillment_type === fulfillment() && (s.weekday === null || s.weekday === weekday));
+      if (!options.length) return sel.add(new Option("אין שעות פנויות ביום הזה", ""));
+      sel.add(new Option("בחרו שעה…", ""));
+      options.forEach((s) => sel.add(new Option(`${s.start_time.slice(0, 5)}–${s.end_time.slice(0, 5)}`, s.id)));
+      if (options.some((s) => s.id === keep)) sel.value = keep;
+    }
+
+    function syncFulfillment() {
+      $("delivery-fields").hidden = fulfillment() !== "delivery";
+      fillSlots();
+      renderSummary();
+    }
+
+    function setError(field, message) {
+      const el = document.querySelector(`[data-field="${field}"]`);
+      el.classList.toggle("invalid", !!message);
+      const err = el.querySelector(".field-error");
+      err.textContent = message || "";
+      err.hidden = !message;
+    }
+
+    function validateEvent() {
+      const errors = {};
+      const date = $("event-date").value;
+      const total = guests();
+      if (!eventType()) errors.event_type = "בחרו את סוג האירוע.";
+      if (!date) errors.event_date = "בחרו תאריך.";
+      else if (date < $("event-date").min) errors.event_date = `התאריך המוקדם ביותר הוא ${fmtDate($("event-date").min)}.`;
+      else if (blockedByDate.has(date)) errors.event_date = `התאריך הזה סגור להזמנות${blockedByDate.get(date) ? ` (${blockedByDate.get(date)})` : ""}. בחרו תאריך אחר.`;
+      if (total < 1) errors.adults = "צריך לפחות אורח אחד.";
+      for (const f of ["vegetarian", "vegan", "restricted"]) {
+        if (num($(f).value) > total) errors[f] = `לא יותר מ-${total} (סך האורחים).`;
+      }
+      if (!$("slot").value) errors.slot = date ? "בחרו שעה." : "בחרו קודם תאריך.";
+      if (fulfillment() === "delivery") {
+        if (!$("zone").value) errors.zone = "בחרו אזור משלוח.";
+        if (!$("address").value.trim()) errors.address = "כתבו כתובת למשלוח.";
+      }
+      for (const f of ["event_type", "event_date", "adults", "vegetarian", "vegan", "restricted", "slot", "zone", "address"]) setError(f, errors[f]);
+      const first = Object.keys(errors)[0];
+      if (first) document.querySelector(`[data-field="${first}"] input, [data-field="${first}"] select`)?.focus();
+      return !first;
+    }
+
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-inc],[data-dec]");
+      if (!b) return;
+      const input = $(b.dataset.inc || b.dataset.dec);
+      input.value = Math.max(0, num(input.value) + (b.dataset.inc ? 1 : -1));
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    $("event-type").addEventListener("change", () => {
+      $("event-type-other").hidden = $("event-type").value !== "other";
+      if (!$("event-type-other").hidden) $("event-type-other").focus();
+    });
+    $("event-date").addEventListener("change", fillSlots);
+    document.querySelectorAll("[name=fulfillment]").forEach((r) => r.addEventListener("change", syncFulfillment));
+    $("zone").addEventListener("change", () => {
+      const z = zone();
+      $("zone-hint").textContent = z?.definition?.cities ? `כולל: ${z.definition.cities.join(", ")}` : "";
+    });
+    $("step-1").addEventListener("input", () => { renderSummary(); persist(); });
+    $("step-1").addEventListener("change", () => { renderSummary(); persist(); });
+
+    // ------------------------------------------------------------ step 2: menu
+    const UNIT = {
+      per_guest: () => "לאורח",
+      per_tray: (d) => `/ ${d.unit_label || "מגש"}`,
+      per_weight: (d) => `ל${d.unit_label || 'ק"ג'}`,
+      per_item: (d) => `ל${d.unit_label || "יחידה"}`,
+    };
+    const QTY_WORD = { per_guest: "אורחים", per_tray: "מגשים", per_weight: 'ק"ג', per_item: "יח'" };
+    const KASHRUT = { meat: ["בשרי", "meat"], dairy: ["חלבי", "dairy"], pareve: ["פרווה", "pareve"] };
+    const stepOf = (d) => (d.pricing_unit === "per_weight" ? 0.5 : 1);
+    const minOf = (d) => Number(d.min_quantity) || stepOf(d);
+    const imageUrl = (path) => (path ? supabase.storage.from("dish-images").getPublicUrl(path).data.publicUrl : "");
+
+    function badges(d) {
+      const diet = d.dish_dietary || {};
+      const out = [];
+      const k = KASHRUT[diet.kashrut_class];
+      out.push(k ? `<span class="tag ${k[1]}">${k[0]}</span>` : `<span class="tag unknown">כשרות: לא צוין</span>`);
+      if (diet.is_vegan) out.push(`<span class="tag veg">טבעוני</span>`);
+      else if (diet.is_vegetarian) out.push(`<span class="tag veg">צמחוני</span>`);
+      if (diet.is_vegetarian == null) out.push(`<span class="tag unknown">צמחוני: לא ידוע</span>`);
+      else if (diet.is_vegetarian && diet.is_vegan == null) out.push(`<span class="tag unknown">טבעוני: לא ידוע</span>`);
+      return out.join("");
+    }
+
+    function allergenText(d) {
+      const rows = d.dish_allergens || [];
+      if (!rows.length) return "מידע על אלרגנים עוד לא הוזן.";
+      const contains = rows.filter((a) => a.status === "contains").map((a) => a.allergens.name);
+      const free = rows.filter((a) => a.status === "free").map((a) => a.allergens.name);
+      const parts = [];
+      if (contains.length) parts.push(`<strong>מכיל:</strong> ${esc(contains.join(", "))}`);
+      if (free.length) parts.push(`ללא: ${esc(free.join(", "))}`);
+      return parts.join(" · ") || "מידע על אלרגנים עוד לא הוזן.";
+    }
+
+    function actionsHtml(d) {
+      const q = state.items[d.id];
+      const min = minOf(d);
+      const minNote = d.min_quantity ? `<span class="min">מינימום ${Number(d.min_quantity)}</span>` : "<span></span>";
+      if (!q) return `${minNote}<button type="button" data-add="${d.id}" aria-label="הוספת ${esc(d.name)}">הוספה</button>`;
+      return `${minNote}<div class="qty">
+          <button type="button" data-minus="${d.id}" aria-label="פחות ${esc(d.name)}">${q <= min ? "✕" : "−"}</button>
+          <input type="number" inputmode="decimal" step="${stepOf(d)}" min="0" value="${q}" data-qty="${d.id}" aria-label="כמות ${esc(d.name)} (${QTY_WORD[d.pricing_unit]})">
+          <button type="button" data-plus="${d.id}" aria-label="עוד ${esc(d.name)}">+</button>
+        </div>`;
+    }
+
+    function dishCard(d) {
+      return `<article class="dish${state.items[d.id] ? " in-order" : ""}" id="dish-${d.id}">
+        ${d.image_path ? `<img src="${imageUrl(d.image_path)}" alt="" loading="lazy" width="480" height="320">` : ""}
+        <div class="dish-body">
+          <h4>${esc(d.name)}</h4>
+          ${d.description ? `<p class="desc">${esc(d.description)}</p>` : ""}
+          <div class="price">${money(d.unit_price)} <span class="unit">${esc(UNIT[d.pricing_unit](d))}</span></div>
+          <div class="badges">${badges(d)}</div>
+          <p class="allergens">${allergenText(d)}</p>
+          <div class="dish-actions">${actionsHtml(d)}</div>
+        </div>
+      </article>`;
+    }
+
+    function renderCats() {
+      const all = [{ id: "all", name: "הכל" }, ...categories];
+      $("cats").innerHTML = all.map((c) => `<button type="button" class="chip" data-cat="${c.id}" aria-pressed="${state.category === c.id}">${esc(c.name)}</button>`).join("");
+    }
+
+    function renderMenu() {
+      const veg = $("f-veg").checked, vegan = $("f-vegan").checked;
+      const visible = dishes.filter((d) =>
+        (!veg || d.dish_dietary?.is_vegetarian === true) && (!vegan || d.dish_dietary?.is_vegan === true));
+      const html = categories
+        .filter((c) => state.category === "all" || state.category === c.id)
+        .map((c) => {
+          const list = visible.filter((d) => d.category_id === c.id);
+          return list.length ? `<h3 class="category-title">${esc(c.name)}</h3><div class="dish-grid">${list.map(dishCard).join("")}</div>` : "";
+        }).join("");
+      $("menu").innerHTML = html || `<p class="muted">אין מנות שמתאימות לסינון.</p>`;
+    }
+
+    function setQty(id, value, focusSel) {
+      const d = dishById.get(id);
+      let q = Math.round((Number(value) || 0) / stepOf(d)) * stepOf(d);
+      if (q > 0 && q < minOf(d)) q = minOf(d);
+      if (q > 0) state.items[id] = q; else delete state.items[id];
+      const card = $(`dish-${id}`);
+      if (card) {
+        card.classList.toggle("in-order", q > 0);
+        card.querySelector(".dish-actions").innerHTML = actionsHtml(d);
+        if (focusSel) (card.querySelector(focusSel) || card.querySelector("[data-add],[data-plus]"))?.focus();
+      }
+      renderSummary();
+      persist();
+    }
+
+    $("menu").addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      if (b.dataset.add) {
+        const d = dishById.get(b.dataset.add);
+        setQty(d.id, d.pricing_unit === "per_guest" ? Math.max(guests(), minOf(d)) : minOf(d), "[data-plus]");
+      } else if (b.dataset.plus) {
+        const d = dishById.get(b.dataset.plus);
+        setQty(d.id, (state.items[d.id] || 0) + stepOf(d), "[data-plus]");
+      } else if (b.dataset.minus) {
+        const d = dishById.get(b.dataset.minus);
+        const q = state.items[d.id] || 0;
+        setQty(d.id, q <= minOf(d) ? 0 : q - stepOf(d), "[data-minus]");
+      }
+    });
+    $("menu").addEventListener("change", (e) => {
+      if (e.target.dataset.qty) setQty(e.target.dataset.qty, e.target.value, "[data-qty]");
+    });
+    $("cats").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-cat]");
+      if (!b) return;
+      state.category = b.dataset.cat;
+      renderCats();
+      renderMenu();
+    });
+    $("f-veg").addEventListener("change", renderMenu);
+    $("f-vegan").addEventListener("change", renderMenu);
+
+    // ------------------------------------------------------------ pricing (estimate; the database freezes the real total on submit)
+    function pricing() {
+      const lines = Object.entries(state.items).map(([id, q]) => {
+        const d = dishById.get(id);
+        return { d, q, total: Math.round(d.unit_price * q * 100) / 100 };
+      });
+      const subtotal = lines.reduce((s, l) => s + l.total, 0);
+      const fee = fulfillment() === "delivery" ? Number(zone()?.fee ?? 0) : 0;
+      return { lines, subtotal, fee, total: subtotal + fee };
+    }
+
+    function renderSummary() {
+      const p = pricing();
+      const g = guests();
+      const date = $("event-date").value;
+      $("brief").textContent = [eventType(), date && fmtDate(date), g && `${g} אורחים`, fulfillment() === "delivery" ? "משלוח" : "איסוף עצמי"]
+        .filter(Boolean).join(" · ");
+      $("lines").innerHTML = p.lines.length
+        ? p.lines.map((l) => `<li><span>${esc(l.d.name)}<span class="q">${l.q} ${QTY_WORD[l.d.pricing_unit]} × ${money(l.d.unit_price)}</span></span><span class="amount">${money(l.total)}</span></li>`).join("")
+        : `<li class="empty">עוד לא נבחרו מנות</li>`;
+      $("t-sub").textContent = money(p.subtotal);
+      $("t-fee").textContent = fulfillment() === "delivery" ? (zone() ? money(p.fee) : "לפי אזור") : "—";
+      $("t-total").textContent = money(p.total);
+      $("t-note").textContent = settings?.prices_include_vat ? 'המחירים כוללים מע"מ.' : "";
+      const kinds = new Set(p.lines.map((l) => l.d.dish_dietary?.kashrut_class));
+      document.querySelectorAll(".kashrut-warning").forEach((el) => (el.hidden = !(kinds.has("meat") && kinds.has("dairy"))));
+      const count = p.lines.length;
+      if (state.step === 2) $("next").textContent = count ? `לסיכום (${count} מנות)` : "לסיכום";
+    }
+
+    // ------------------------------------------------------------ step 3: review
+    function renderReview() {
+      const p = pricing();
+      const slot = slots.find((s) => s.id === $("slot").value);
+      const rows = [
+        ["סוג האירוע", eventType()],
+        ["תאריך", fmtDate($("event-date").value)],
+        ["אורחים", `${num($("adults").value)} מבוגרים, ${num($("children").value)} ילדים`],
+        ["מתוכם", `${num($("vegetarian").value)} צמחונים, ${num($("vegan").value)} טבעונים, ${num($("restricted").value)} עם הגבלה אחרת`],
+        [fulfillment() === "delivery" ? "משלוח" : "איסוף עצמי", slot ? `${slot.start_time.slice(0, 5)}–${slot.end_time.slice(0, 5)}` : ""],
+      ];
+      if (fulfillment() === "delivery") rows.push(["כתובת", `${$("address").value.trim()} (${zone()?.name ?? ""})`]);
+      if ($("notes").value.trim()) rows.push(["הערות", $("notes").value.trim()]);
+      $("review-details").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
+      $("review-lines").innerHTML = p.lines.map((l) => `<tr>
+          <td>${esc(l.d.name)}</td><td>${l.q} ${QTY_WORD[l.d.pricing_unit]}</td>
+          <td class="num">${money(l.d.unit_price)}</td><td class="num">${money(l.total)}</td></tr>`).join("");
+      $("review-totals").innerHTML = `
+        <tr><td colspan="3">מנות</td><td class="num">${money(p.subtotal)}</td></tr>
+        ${fulfillment() === "delivery" ? `<tr><td colspan="3">משלוח</td><td class="num">${money(p.fee)}</td></tr>` : ""}
+        <tr class="grand"><td colspan="3">סה"כ משוער</td><td class="num">${money(p.total)}</td></tr>`;
+    }
+
+    // ------------------------------------------------------------ navigation
+    function go(step) {
+      state.step = step;
+      ["step-1", "step-2", "step-3"].forEach((id, i) => ($(id).hidden = i + 1 !== step));
+      document.querySelectorAll("#stepper li").forEach((li) => {
+        const n = Number(li.dataset.step);
+        li.classList.toggle("done", n < step);
+        if (n === step) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+      });
+      $("back").hidden = step === 1;
+      $("next").textContent = step === 1 ? "המשך לבחירת מנות" : step === 3 ? "שליחה לאישור העסק" : "לסיכום";
+      if (step === 2) { renderCats(); renderMenu(); }
+      if (step === 3) renderReview();
+      $("submit-error").hidden = true;
+      renderSummary();
+      window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      document.querySelector(`#step-${step} h2`)?.focus({ preventScroll: true });
+    }
+
+    $("back").onclick = () => go(state.step - 1);
+    $("next").onclick = async () => {
+      if (state.step === 1) { if (validateEvent()) go(2); return; }
+      if (state.step === 2) {
+        if (!Object.keys(state.items).length) {
+          $("next").textContent = "בחרו לפחות מנה אחת";
+          return;
+        }
+        go(3);
+        return;
+      }
+      await submit();
+    };
+
+    // ------------------------------------------------------------ submit (C5)
+    async function submit() {
+      const btn = $("next");
+      btn.disabled = $("back").disabled = true;
+      btn.textContent = "שולח…";
+      $("submit-error").hidden = true;
+      let eventId, orderId;
+      try {
+        const slot = slots.find((s) => s.id === $("slot").value);
+        const date = $("event-date").value;
+        const ev = await supabase.from("events").insert({
+          customer_id: me.id,
+          event_type: eventType(),
+          event_date: date,
+          adults: num($("adults").value),
+          children: num($("children").value),
+          vegetarian_guests: num($("vegetarian").value),
+          vegan_guests: num($("vegan").value),
+          restricted_guests: num($("restricted").value),
+          dietary_notes: $("notes").value.trim() || null,
+        }).select("id").single();
+        if (ev.error) throw ev.error;
+        eventId = ev.data.id;
+
+        const delivery = fulfillment() === "delivery";
+        const order = await supabase.from("orders").insert({
+          customer_id: me.id,
+          event_id: eventId,
+          fulfillment_type: fulfillment(),
+          requested_at: new Date(`${date}T${slot.start_time}`).toISOString(),
+          delivery_address: delivery ? $("address").value.trim() : null,
+          delivery_zone_id: delivery ? $("zone").value : null,
+        }).select("id").single();
+        if (order.error) throw order.error;
+        orderId = order.data.id;
+
+        const items = await supabase.from("order_items").insert(
+          Object.entries(state.items).map(([dish_id, quantity]) => ({ order_id: orderId, dish_id, quantity })));
+        if (items.error) throw items.error;
+
+        // The database checks the transition, freezes prices and computes the total.
+        const sent = await supabase.from("orders").update({ status: "pending_approval" })
+          .eq("id", orderId).select("total").single();
+        if (sent.error) throw sent.error;
+
+        try { localStorage.removeItem(DRAFT_KEY); } catch {}
+        $("done-total").textContent = `סה"כ: ${money(sent.data.total)}`;
+        ["step-1", "step-2", "step-3"].forEach((id) => ($(id).hidden = true));
+        $("summary").hidden = true;
+        $("stepper").hidden = true;
+        $("step-done").hidden = false;
+        $("step-done").querySelector("h2").focus?.();
+        window.scrollTo({ top: 0 });
+      } catch (error) {
+        // Undo the partial draft so a retry starts clean.
+        if (orderId) await supabase.from("orders").delete().eq("id", orderId);
+        if (eventId) await supabase.from("events").delete().eq("id", eventId);
+        $("submit-error").textContent = `השליחה נכשלה: ${error.message}. לא נשמר דבר, אפשר לנסות שוב.`;
+        $("submit-error").hidden = false;
+        btn.textContent = "שליחה לאישור העסק";
+      } finally {
+        btn.disabled = $("back").disabled = false;
+      }
+    }
+
+    $("new-order").onclick = () => location.reload();
+
+    // ------------------------------------------------------------ start
+    $("event-type-other").hidden = $("event-type").value !== "other";
+    document.querySelectorAll(".step h2").forEach((h) => h.setAttribute("tabindex", "-1"));
+    syncFulfillment();
+    go(1);
+  </script>
+</body>
+</html>

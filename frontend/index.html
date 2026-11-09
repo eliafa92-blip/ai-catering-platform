@@ -1,18 +1,151 @@
 <!doctype html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Catering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff9ed">
+  <title>yumm.ai | קייטרינג לאירועים פרטיים</title>
+  <meta name="description" content="בוחרים מנות, רואים מחיר מיד, והעוזר החכם מציע ועוזר. כל בקשה נשלחת לאישור העסק.">
+  <link rel="preload" href="/assets/fonts/playpen-sans-hebrew-hebrew-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/heebo-hebrew-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/motion.css">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
-  <main>
-    <h1>Catering</h1>
-    <ul>
-      <li><a href="/customer/">Customer ordering</a></li>
-      <li><a href="/admin/">Business dashboard</a></li>
-    </ul>
+  <a class="skip-link" href="#main">דילוג לתוכן</a>
+
+  <header class="top">
+    <div class="top-inner">
+      <p class="wordmark brand"><bdi>yumm<span class="dot">.</span>ai</bdi></p>
+      <a class="btn btn-primary" href="/customer/">תכננו את האירוע</a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- Hero: the one place the mascot is large. Art is decorative; the headline and CTA carry the message. -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-text">
+        <h1 id="hero-title">כל חגיגה מתחילה בשולחן מלא</h1>
+        <p class="lead">בוחרים מנות, רואים מחיר מיד, והעוזר החכם מציע ועוזר. כל בקשה נשלחת לאישור העסק.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="/customer/">תכננו את האירוע</a>
+          <a class="btn btn-secondary btn-lg" href="#how">איך זה עובד</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <span class="sun"></span>
+        <picture class="hero-mascot">
+          <source type="image/webp" srcset="/assets/mascot/welcome/mascot-welcome.webp">
+          <img src="/assets/mascot/welcome/mascot-welcome.png" alt="" width="692" height="900" decoding="async" fetchpriority="high">
+        </picture>
+        <picture class="hero-decor hero-tomatoes">
+          <source type="image/webp" srcset="/assets/decorations/decor-tomatoes.webp">
+          <img src="/assets/decorations/decor-tomatoes.png" alt="" width="432" height="480" loading="lazy" decoding="async">
+        </picture>
+        <picture class="hero-decor hero-confetti">
+          <source type="image/webp" srcset="/assets/decorations/decor-confetti.webp">
+          <img src="/assets/decorations/decor-confetti.png" alt="" width="432" height="480" loading="lazy" decoding="async">
+        </picture>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="occasions-title">
+      <h2 id="occasions-title" class="reveal">מה חוגגים?</h2>
+      <ul class="occasions">
+        <li class="reveal"><a class="occasion-card" href="/customer/?occasion=%D7%99%D7%95%D7%9D%20%D7%94%D7%95%D7%9C%D7%93%D7%AA">
+          <picture><source type="image/webp" srcset="/assets/occasions/occasion-birthday.webp"><img src="/assets/occasions/occasion-birthday.png" alt="" width="900" height="670" loading="lazy" decoding="async"></picture>
+          <span>יום הולדת</span></a></li>
+        <li class="reveal"><a class="occasion-card" href="/customer/?occasion=%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%9E%D7%A9%D7%A4%D7%97%D7%AA%D7%99">
+          <picture><source type="image/webp" srcset="/assets/occasions/occasion-family-dinner.webp"><img src="/assets/occasions/occasion-family-dinner.png" alt="" width="900" height="591" loading="lazy" decoding="async"></picture>
+          <span>אירוע משפחתי</span></a></li>
+        <li class="reveal"><a class="occasion-card" href="/customer/?occasion=%D7%91%D7%A8%20%D7%90%D7%95%20%D7%91%D7%AA%20%D7%9E%D7%A6%D7%95%D7%95%D7%94">
+          <picture><source type="image/webp" srcset="/assets/occasions/occasion-bar-bat-mitzvah.webp"><img src="/assets/occasions/occasion-bar-bat-mitzvah.png" alt="" width="900" height="708" loading="lazy" decoding="async"></picture>
+          <span>בר או בת מצווה</span></a></li>
+        <li class="reveal"><a class="occasion-card" href="/customer/?occasion=%D7%90%D7%A8%D7%95%D7%97%D7%AA%20%D7%A9%D7%91%D7%AA">
+          <picture><source type="image/webp" srcset="/assets/occasions/occasion-shabbat.webp"><img src="/assets/occasions/occasion-shabbat.png" alt="" width="900" height="621" loading="lazy" decoding="async"></picture>
+          <span>ארוחת שבת</span></a></li>
+        <li class="reveal"><a class="occasion-card" href="/customer/?occasion=%D7%99%D7%95%D7%9D%20%D7%A0%D7%99%D7%A9%D7%95%D7%90%D7%99%D7%9F">
+          <picture><source type="image/webp" srcset="/assets/occasions/occasion-anniversary.webp"><img src="/assets/occasions/occasion-anniversary.png" alt="" width="900" height="626" loading="lazy" decoding="async"></picture>
+          <span>יום נישואין</span></a></li>
+        <li class="reveal"><a class="occasion-card" href="/customer/?occasion=%D7%97%D7%92%D7%99%D7%92%D7%94%20%D7%A4%D7%A8%D7%98%D7%99%D7%AA">
+          <picture><source type="image/webp" srcset="/assets/occasions/occasion-celebration.webp"><img src="/assets/occasions/occasion-celebration.png" alt="" width="900" height="677" loading="lazy" decoding="async"></picture>
+          <span>חגיגה פרטית</span></a></li>
+      </ul>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-title">
+      <h2 id="how-title" class="reveal">איך זה עובד</h2>
+      <ol class="steps">
+        <li class="step reveal">
+          <img class="step-icon" src="/assets/icons/illustrated/icon-calendar.png" alt="" width="384" height="322" loading="lazy">
+          <h3>מספרים על האירוע</h3>
+          <p>תאריך, מספר אורחים והעדפות תזונה.</p>
+        </li>
+        <li class="step reveal">
+          <img class="step-icon" src="/assets/icons/illustrated/icon-serving.png" alt="" width="384" height="336" loading="lazy">
+          <h3>בונים תפריט</h3>
+          <p>בוחרים מנות ורואים את המחיר מתעדכן.</p>
+        </li>
+        <li class="step reveal">
+          <img class="step-icon" src="/assets/icons/illustrated/icon-delivery.png" alt="" width="384" height="301" loading="lazy">
+          <h3>שולחים לאישור</h3>
+          <p>העסק בודק ומאשר. עד אז זו בקשה להצעת מחיר, לא הזמנה.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="section assistant reveal" aria-labelledby="ai-title">
+      <picture class="assistant-mascot" aria-hidden="true">
+        <source type="image/webp" srcset="/assets/mascot/suggesting/mascot-suggesting.webp">
+        <img src="/assets/mascot/suggesting/mascot-suggesting.png" alt="" width="453" height="900" loading="lazy" decoding="async">
+      </picture>
+      <div class="assistant-body">
+        <h2 id="ai-title">העוזר החכם מציע. אתם מחליטים.</h2>
+        <p class="lead">הוא ממליץ על מנות מהתפריט, בודק כמויות ומסביר את המחיר. שום דבר בהזמנה לא משתנה בלי האישור שלכם.</p>
+        <!-- Clickable example of the approval card, labelled as an example. It never sends anything. -->
+        <figure class="example" aria-label="דוגמה להצעה של העוזר">
+          <figcaption>דוגמה להצעה. אפשר ללחוץ ולנסות.</figcaption>
+          <div class="lproposal" id="demo-proposal">
+            <h3>שינוי מוצע</h3>
+            <p class="row"><span>ירקות שורש קלויים</span><span><span class="muted">לא בהזמנה</span> ← <b>2 מגשים</b></span></p>
+            <p class="row total"><span>סה״כ</span><span><span class="muted">1,200 ₪</span> ← <b>1,350 ₪</b> <span class="delta" dir="ltr">(+150 ₪)</span></span></p>
+            <div class="actions" id="demo-actions">
+              <button class="btn btn-secondary" type="button" id="demo-reject">דחייה</button>
+              <button class="btn btn-primary" type="button" id="demo-approve">אישור השינוי</button>
+            </div>
+            <div class="done" id="demo-done" hidden>
+              <p class="demo-total" id="demo-total" hidden aria-live="polite">ההזמנה עכשיו: <strong class="n" id="demo-total-n">1,200 ₪</strong></p>
+              <div class="done-row">
+                <span class="mascot-avatar" id="demo-avatar" style="--avatar:36px" aria-hidden="true"><picture><source type="image/webp" srcset="/assets/mascot/celebrating/mascot-celebrating.webp"><img src="/assets/mascot/celebrating/mascot-celebrating.png" alt="" width="654" height="900" loading="lazy" decoding="async"></picture></span>
+                <p class="badge" id="demo-note" role="status"></p>
+                <button class="link-btn" type="button" id="demo-reset">להתחיל מחדש</button>
+              </div>
+            </div>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="cta reveal" aria-labelledby="cta-title">
+      <h2 id="cta-title">מוכנים לתכנן?</h2>
+      <a class="btn btn-primary btn-lg" href="/customer/">תכננו את האירוע</a>
+    </section>
+
   </main>
+
+  <footer class="foot">
+    <p class="wordmark"><bdi>yumm<span class="dot">.</span>ai</bdi></p>
+    <nav class="small" aria-label="קישורים">
+      <a href="/login/">כניסה</a> ·
+      <a href="/order/">הזמנה חדשה</a> ·
+      <a href="/orders/">ההזמנות שלי</a> ·
+      <a href="/admin/">ממשק העסק</a>
+    </nav>
+  </footer>
+
+  <script type="module" src="/js/landing.js"></script>
 </body>
 </html>
