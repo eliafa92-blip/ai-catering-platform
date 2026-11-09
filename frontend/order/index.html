@@ -207,10 +207,10 @@
         <h3>ההזמנה שלכם</h3>
         <p class="event-brief" id="brief"></p>
         <ul class="lines" id="lines"></ul>
-        <div class="totals" aria-live="polite">
+        <div class="totals">
           <div class="row"><span>מנות</span><span id="t-sub"></span></div>
           <div class="row"><span>משלוח</span><span id="t-fee"></span></div>
-          <div class="row grand"><span>סה"כ משוער</span><span id="t-total"></span></div>
+          <div class="row grand"><span>סה"כ משוער</span><span id="t-total" aria-live="polite"></span></div>
           <span class="note" id="t-note"></span>
         </div>
         <div class="summary-actions">
@@ -380,7 +380,12 @@
       const z = zone();
       $("zone-hint").textContent = z?.definition?.cities ? `כולל: ${z.definition.cities.join(", ")}` : "";
     });
-    $("step-1").addEventListener("input", () => { renderSummary(); persist(); });
+    // Notes is free text that never affects price/validation; skip it so typing there
+    // doesn't re-render (and re-announce via the totals' aria-live) on every keystroke.
+    $("step-1").addEventListener("input", (e) => {
+      if (e.target.id === "notes") return;
+      renderSummary(); persist();
+    });
     $("step-1").addEventListener("change", () => { renderSummary(); persist(); });
 
     // ------------------------------------------------------------ step 2: menu

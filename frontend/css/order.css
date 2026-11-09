@@ -13,6 +13,9 @@
 
 [hidden] { display: none !important; }
 .order-page { padding-block-end: var(--space-6); }
+/* Deliberate: the heading gets tabindex="-1" and a programmatic .focus() on step change
+   (see order/index.html, main.js) for focus management, not a stray outline removal.
+   Do not "fix" this by restoring a visible outline. */
 .step h2:focus { outline: none; }
 
 /* ---------- header ---------- */
@@ -100,7 +103,7 @@
 select, textarea {
   font: inherit;
   padding: var(--space-3);
-  border: 1px solid #d4cec5;
+  border: 1px solid var(--color-control-border);
   border-radius: 8px;
   min-height: 44px;
   background: var(--color-surface);
@@ -109,7 +112,7 @@ select, textarea {
 textarea { min-height: 88px; resize: vertical; }
 
 /* guest counters */
-.counter { display: flex; align-items: center; border: 1px solid #d4cec5; border-radius: 8px; overflow: hidden; inline-size: fit-content; }
+.counter { display: flex; align-items: center; border: 1px solid var(--color-control-border); border-radius: 8px; overflow: hidden; inline-size: fit-content; }
 .counter button { min-height: 44px; min-width: 44px; padding: 0; border: none; border-radius: 0; background: var(--color-soft); color: var(--color-text); font-size: 1.2rem; }
 .counter input { inline-size: 64px; border: none; border-radius: 0; text-align: center; font-variant-numeric: tabular-nums; }
 
@@ -119,6 +122,9 @@ textarea { min-height: 88px; resize: vertical; }
 .segmented input { position: absolute; opacity: 0; pointer-events: none; }
 .segmented label:has(input:checked) { background: var(--color-accent); color: #fff; }
 .segmented label:has(input:focus-visible) { outline: 3px solid var(--color-accent); outline-offset: -3px; }
+/* Fallback for browsers without :has() support: the input itself still gets a visible
+   focus ring (it is positioned off but not display:none, so the outline renders). */
+.segmented input:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
 
 /* ---------- menu ---------- */
 .menu-tools { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; margin-block-end: var(--space-4); }
