@@ -27,8 +27,10 @@
       </table>
     </div>
   </main>
+  <div id="announce" class="visually-hidden" aria-live="polite" role="status"></div>
   <script type="module">
     import { requireUser, signOut, STATUS_LABELS, money } from "/js/supabase.js";
+    import { announce } from "/js/lib/announce.js";
 
     const { supabase, user } = await requireUser({ owner: true });
     document.getElementById("who").textContent = user.email;
@@ -92,7 +94,10 @@
 
     supabase
       .channel("all-orders")
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, (change) => {
+        load();
+        if (change.new?.status) announce(`Order updated to: ${STATUS_LABELS[change.new.status] ?? change.new.status}`);
+      })
       .subscribe((status) => {
         document.getElementById("live").textContent = status === "SUBSCRIBED" ? "live" : status.toLowerCase();
       });

@@ -23,8 +23,10 @@
       </table>
     </div>
   </main>
+  <div id="announce" class="visually-hidden" aria-live="polite" role="status"></div>
   <script type="module">
     import { requireUser, signOut, STATUS_LABELS, money } from "/js/supabase.js";
+    import { announce } from "/js/lib/announce.js";
 
     const { supabase, user } = await requireUser();
     document.getElementById("signout").onclick = signOut;
@@ -63,6 +65,8 @@
         await load();
         const row = document.getElementById(`o-${change.new?.id}`);
         row?.classList.add("flash");
+        // The flash is visual only; announce the change too, for screen reader users.
+        if (change.new?.status) announce(`Order updated to: ${STATUS_LABELS[change.new.status] ?? change.new.status}`);
       })
       .subscribe((status) => {
         document.getElementById("live").textContent = status === "SUBSCRIBED" ? "live" : status.toLowerCase();
