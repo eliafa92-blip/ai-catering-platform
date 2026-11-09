@@ -13,7 +13,7 @@
     <button id="signout" type="button" class="link">Sign out</button>
   </header>
   <main>
-    <h1>Orders</h1>
+    <h1 id="page-heading" tabindex="-1">Orders</h1>
     <p class="muted">New and changed orders appear live. <span id="live" class="badge" aria-live="polite">connecting…</span></p>
     <div class="filters" role="group" aria-label="Filter by status">
       <button type="button" data-filter="pending_approval" aria-pressed="true">Awaiting approval</button>
@@ -79,7 +79,13 @@
         b.disabled = false;
         return showError(error.message);
       }
+      // load() rebuilds the whole table via innerHTML, destroying the button just clicked and
+      // dropping keyboard focus to <body>; move it to a stable landmark instead.
+      const newStatus = b.dataset.to;
+      const id = b.dataset.id;
       await load();
+      document.getElementById("page-heading").focus();
+      announce(`Order ${id} set to ${STATUS_LABELS[newStatus] ?? newStatus}`);
     });
 
     document.querySelectorAll("[data-filter]").forEach((b) =>
