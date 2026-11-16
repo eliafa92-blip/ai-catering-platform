@@ -13,11 +13,15 @@ export function mountEvent(root) {
   let attempted = false;
   const fields = {}; // name -> { wrap, error }
 
-  function field(name, labelText, control, { hint, hintId } = {}) {
+  // Required fields say so in the label text (WCAG 3.3.2), not by colour or an asterisk alone.
+  const requiredMark = () => h("span", { class: "req", text: " (חובה)" });
+
+  function field(name, labelText, control, { hint, hintId, required = false } = {}) {
     const errorId = `err-${name}`;
     const error = h("p", { class: "error", id: errorId, hidden: true });
+    if (required) control.setAttribute("aria-required", "true");
     const wrap = h("div", { class: "field" },
-      h("label", { for: control.id, text: labelText }),
+      h("label", { for: control.id }, labelText, required ? requiredMark() : null),
       control,
       hint ? h("p", { class: "hint", id: hintId, text: hint }) : null,
       error,
@@ -32,7 +36,7 @@ export function mountEvent(root) {
   // the visible label is the accessible name, so the choice works with images disabled.
   const typeError = h("p", { class: "error", id: "err-type", hidden: true });
   const typeGroup = h("fieldset", { class: "occasion-grid", "aria-describedby": "err-type" },
-    h("legend", { class: "visually-hidden", text: "סוג האירוע" }),
+    h("legend", { class: "visually-hidden", text: "סוג האירוע (חובה)" }),
     EVENT_TYPES.map((t, i) => {
       const input = h("input", { type: "radio", name: "event-type", value: t, id: `f-type-${i}`, checked: ev().type === t });
       input.addEventListener("change", () => update({ type: t }));
@@ -56,10 +60,10 @@ export function mountEvent(root) {
   const guestCounters = {};
   function guestField(name, labelText, hint, opts = {}) {
     const id = `f-${name}`;
-    const c = counter({ id, value: ev()[name], min: opts.min ?? 0, onChange: (n) => update({ [name]: n }), describedBy: `${id}-hint`, name: labelText });
+    const c = counter({ id, name: labelText, value: ev()[name], min: opts.min ?? 0, required: opts.required, onChange: (n) => update({ [name]: n }), describedBy: `${id}-hint` });
     guestCounters[name] = c;
     return h("div", { class: "field" },
-      h("label", { for: id, text: labelText }),
+      h("label", { for: id }, labelText, opts.required ? requiredMark() : null),
       c.el,
       h("p", { class: "hint", id: `${id}-hint`, text: hint }),
     );
@@ -87,14 +91,15 @@ export function mountEvent(root) {
   const feeLine = h("p", { class: "fee-line", "aria-live": "polite" });
 
   const deliveryBox = h("div", { class: "grid-2 delivery-fields" },
-    field("city", "עיר", city),
-    field("address", "רחוב ומספר בית", address),
+    field("city", "עיר", city, { required: true }),
+    field("address", "רחוב ומספר בית", address, { required: true }),
     feeLine,
   );
 
   const continueBtn = h("button", { class: "btn btn-primary", type: "submit" }, "המשך לתפריט", icon("arrow-left"));
 
   const form = h("form", { class: "stack-lg", novalidate: true, onsubmit: onSubmit },
+    h("p", { class: "hint", text: "שדות שמסומנים ב״(חובה)״ צריך למלא כדי להמשיך." }),
     h("section", { class: "panel stack" },
       h("h2", { text: "איזה אירוע מתכננים?" }),
       typeGroup,
@@ -103,14 +108,14 @@ export function mountEvent(root) {
     h("section", { class: "panel stack" },
       h("h2", { text: "מתי?" }),
       h("div", { class: "grid-2" },
-        field("date", "תאריך", date, { hint: `תאריכים סגורים להזמנות: ${closed}`, hintId: "hint-date" }),
-        field("slot", "שעת איסוף או משלוח", slot),
+        field("date", "תאריך", date, { hint: `תאריכים סגורים להזמנות: ${closed}`, hintId: "hint-date", required: true }),
+        field("slot", "שעת איסוף או משלוח", slot, { required: true }),
       ),
     ),
     h("section", { class: "panel stack" },
       h("h2", { text: "האורחים" }),
       h("div", { class: "grid-2" },
-        h("div", {}, guestField("adults", "מבוגרים", "מגיל 13 ומעלה", { min: 0 }), adultsError),
+        h("div", {}, guestField("adults", "מבוגרים", "מגיל 13 ומעלה", { min: 0, required: true }), adultsError),
         guestField("children", "ילדים", "עד גיל 12, נחשבים כחצי מנה"),
       ),
       h("fieldset", { class: "stack", "aria-describedby": "err-dietary" },

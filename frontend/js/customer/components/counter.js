@@ -3,11 +3,12 @@ import { h, icon } from "../../lib/dom.js";
 /** Number field with +/- buttons. Returns { el, input, set(value), setErrorDescribedBy(id|null) }.
     `name` labels the +/- buttons per field (e.g. "מבוגרים") so several counters on one page
     don't all announce as generic "הפחתה"/"הוספה" to a screen reader. */
-export function counter({ id, value, min = 0, max = 500, onChange, describedBy, name }) {
+export function counter({ id, value, min = 0, max = 500, onChange, describedBy, name, required = false }) {
   const input = h("input", {
     id, class: "input counter-input", type: "number", inputmode: "numeric",
     min: String(min), max: String(max), step: "1", value: String(value),
     "aria-describedby": describedBy,
+    "aria-required": required ? "true" : null,
   });
   const clamp = (n) => Math.min(max, Math.max(min, Number.isFinite(n) ? n : min));
   const commit = (n) => {

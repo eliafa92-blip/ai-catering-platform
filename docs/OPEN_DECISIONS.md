@@ -25,6 +25,7 @@ Format: **Question** · *Why it matters* · **Blocks**
 | 18 | Weight unit | kg, 100 g, or configurable per dish? | Per-weight pricing math | Phase 2 pricing units |
 | 19 | Delivery zone definition | Zones by city list, postal code, or radius/polygon? | Address → zone lookup method | Phase 2 delivery zones |
 | 20 | Brand | Business name, logo, colors, fonts | Visual identity | Phase 3 UI polish (neutral tokens until then) |
+| 21 | Accessibility statement | Accessibility contact (phone, email), named coordinator or not, review date, WCAG level audited, and whether the business claims a small-business exemption (Kol Zchut: turnover thresholds) | Content of `frontend/accessibility/index.html` (draft, blanks marked `todo`) | Before any public launch |
 
 ## Decision log
 

@@ -20,8 +20,8 @@ export function mountSummary(root) {
   const contact = getState().order.contact;
   const nameErr = h("p", { class: "error", id: "err-name", hidden: true });
   const phoneErr = h("p", { class: "error", id: "err-phone", hidden: true });
-  const name = h("input", { id: "f-name", class: "input", type: "text", autocomplete: "name", value: contact.name, "aria-describedby": "err-name" });
-  const phone = h("input", { id: "f-phone", class: "input", type: "tel", autocomplete: "tel", inputmode: "tel", value: contact.phone, "aria-describedby": "hint-phone err-phone", dir: "ltr" });
+  const name = h("input", { id: "f-name", class: "input", type: "text", autocomplete: "name", value: contact.name, "aria-describedby": "err-name", "aria-required": "true" });
+  const phone = h("input", { id: "f-phone", class: "input", type: "tel", autocomplete: "tel", inputmode: "tel", value: contact.phone, "aria-describedby": "hint-phone err-phone", "aria-required": "true", dir: "ltr" });
   name.addEventListener("input", () => setContact({ name: name.value }));
   phone.addEventListener("input", () => setContact({ phone: phone.value }));
 
@@ -58,8 +58,8 @@ export function mountSummary(root) {
   } },
     h("h2", { text: "פרטים ליצירת קשר" }),
     h("div", { class: "grid-2" },
-      h("div", { class: "field" }, h("label", { for: "f-name", text: "שם מלא" }), name, nameErr),
-      h("div", { class: "field" }, h("label", { for: "f-phone", text: "טלפון" }), phone,
+      h("div", { class: "field" }, h("label", { for: "f-name" }, "שם מלא", h("span", { class: "req", text: " (חובה)" })), name, nameErr),
+      h("div", { class: "field" }, h("label", { for: "f-phone" }, "טלפון", h("span", { class: "req", text: " (חובה)" })), phone,
         h("p", { class: "hint", id: "hint-phone", text: "העסק ייצור איתכם קשר בנוגע לבקשה." }), phoneErr),
     ),
     itemsError,

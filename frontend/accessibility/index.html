@@ -2,71 +2,102 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>הצהרת נגישות</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff9ed">
+  <title>הצהרת נגישות | yumm.ai</title>
+  <link rel="preload" href="/assets/fonts/playpen-sans-hebrew-hebrew-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/heebo-hebrew-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/landing.css">
 </head>
-<body class="plain">
-  <header class="topbar">
-    <strong>yumm.ai</strong>
-    <a href="/">לעמוד הבית</a>
+<body>
+  <!--
+    DRAFT. Every <mark class="todo"> is a fact only the business can supply (contact details, coordinator,
+    review date, exemption status). Fill them in, delete the draft notice, and have the owner confirm the
+    "what we did" list is still true before publishing. Do not publish with any mark left.
+    Required contents per Kol Zchut (accessibility statement): adaptations made, how to operate the site,
+    parts that are not accessible plus an alternative, how to report a problem, and any exemption.
+  -->
+  <a class="skip-link" href="#main">דילוג לתוכן</a>
+
+  <header class="top">
+    <div class="top-inner">
+      <p class="wordmark brand"><a class="brand-link" href="/" aria-label="yumm.ai, לעמוד הבית"><bdi>yumm<span class="dot">.</span>ai</bdi></a></p>
+      <a class="btn btn-primary" href="/customer/">תכננו את האירוע</a>
+    </div>
   </header>
-  <main>
-    <h1>הצהרת נגישות</h1>
-    <p class="muted">עודכן לאחרונה: 9 בנובמבר 2026</p>
 
-    <section class="card stack">
-      <h2>כיצד האתר הונגש</h2>
-      <p>
-        אתר זה שואף לעמוד בתקן הישראלי ת"י 5568 חלק 1 (המבוסס על הנחיות הנגישות
-        הבינלאומיות WCAG 2.0), ברמת התאמה AA, ומכוון ליעד WCAG 2.2 AA. בין ההתאמות שבוצעו:
-      </p>
+  <main id="main">
+    <section class="prose" aria-labelledby="a11y-title">
+      <h1 id="a11y-title">הצהרת נגישות</h1>
+      <p class="callout-draft"><mark class="todo">טיוטה: יש להשלים את הפרטים המסומנים לפני הפרסום, ולמחוק את ההודעה הזו.</mark></p>
+      <p class="lead">yumm.ai רוצה שכל אדם יוכל להזמין קייטרינג באתר בצורה עצמאית ונוחה, כולל אנשים עם מוגבלות. אנחנו פועלים להתאים את האתר לתקן הישראלי ת״י 5568 חלק 1 (נגישות תכנים באינטרנט), שמבוסס על הנחיות WCAG 2.0, ולתקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות).</p>
+      <p>רמת ההתאמה שאנו מכוונים אליה: WCAG 2.2, רמה AA. <mark class="todo">יושלם לאחר בדיקת נגישות פורמלית: מי ביצע אותה ומתי.</mark></p>
+    </section>
+
+    <section class="prose" aria-labelledby="done-title">
+      <h2 id="done-title">מה עשינו</h2>
       <ul>
-        <li>ניווט מלא במקלדת בכל תהליכי האתר, כולל הזמנה, כניסה וממשק הניהול.</li>
-        <li>תיוג ברור לקוראי מסך עבור שדות טפסים, כפתורים ואזורי תוכן.</li>
-        <li>ניהול מיקום הפוקוס במעברים בין שלבים ואחרי פעולות כמו אישור או דחיית הזמנה.</li>
-        <li>אזורי הכרזה (aria-live) לעדכונים שמתרחשים בלי שינוי פוקוס, כגון עדכוני סטטוס בזמן אמת.</li>
-        <li>ניגודיות צבעים העומדת ביחס של 4.5:1 לפחות עבור טקסט.</li>
-        <li>כיבוד הגדרת "הפחתת תנועה" (prefers-reduced-motion) של מערכת ההפעלה.</li>
-        <li>יעדי מגע בגודל 44 פיקסלים לפחות עבור כפתורים ופקדים.</li>
+        <li>האתר בעברית, מימין לשמאל, ושפת הדף מוגדרת לקוראי מסך.</li>
+        <li>אפשר לתפעל את כל תהליך ההזמנה מהמקלדת בלבד, עם סימון ברור של האלמנט הפעיל.</li>
+        <li>בעמוד הבית, בתהליך ההזמנה ובעמוד הזה יש בראש הדף קישור "דילוג לתוכן".</li>
+        <li>לכל שדה בטופס יש תווית גלויה. שדות חובה מסומנים במילה "חובה", והודעות שגיאה כתובות במילים ומקושרות לשדה כך שקורא מסך מקריא גם למה השדה לא תקין, לא רק שהוא לא תקין.</li>
+        <li>כפתורי הוספה והפחתה של כמויות מציינים בשם את המנה או את סוג האורחים שהם משנים.</li>
+        <li>שינויים שאין להם מיקוד, כמו עדכון סכום ההזמנה, החלת שינוי שהעוזר הציע, או עדכון סטטוס הזמנה בזמן אמת, מוכרזים לקוראי מסך.</li>
+        <li>חלונית העוזר החכם נפתחת כדיאלוג נגיש: המיקוד נשאר בתוכה כל עוד היא פתוחה, ותוכן הדף שמאחוריה אינו נגיש לניווט בזמן הזה.</li>
+        <li>אחרי אישור או דחיית הזמנה בממשק העסק, המיקוד חוזר למקום יציב בדף ולא נעלם.</li>
+        <li>תמונות מקשטות מוסתרות מטכנולוגיות מסייעות, כך שהמידע מועבר גם בטקסט בלבד.</li>
+        <li>מידע לא מועבר בצבע בלבד, ואנימציות מופסקות למי שביקש זאת בהגדרות המכשיר.</li>
+        <li>מידע על אלרגנים מוצג בטקסט. כשאין לעסק מידע על מנה, כתוב זאת במפורש.</li>
       </ul>
     </section>
 
-    <section class="card stack">
-      <h2>כיצד להשתמש באתר</h2>
-      <p>אין קיצורי מקלדת מותאמים באתר, מעבר למקשים הסטנדרטיים של הדפדפן:</p>
+    <section class="prose" aria-labelledby="how-title">
+      <h2 id="how-title">איך משתמשים באתר</h2>
       <ul>
-        <li><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> — מעבר בין פקדים.</li>
-        <li><kbd>Enter</kbd> / <kbd>רווח</kbd> — הפעלת כפתור או קישור.</li>
-        <li><kbd>Esc</kbd> — סגירת חלונות וחלוניות, כגון חלונית העוזר החכם.</li>
+        <li>ההזמנה מורכבת מארבעה שלבים: פרטי האירוע, תפריט, סיכום ושליחה. בראש הדף יש רשימה של השלבים.</li>
+        <li>בכל מעבר בין שלבים המיקוד עובר לכותרת הדף.</li>
+        <li>העוזר החכם נפתח בכפתור "שאלו את העוזר" וסוגרים אותו בכפתור הסגירה או במקש Escape. הוא מציע שינויים, ושום שינוי לא מתבצע בלי אישור שלכם.</li>
+        <li>שליחת ההזמנה היא בקשה להצעת מחיר. היא נחשבת מאושרת רק לאחר שהעסק אישר אותה.</li>
       </ul>
-      <p>למשתמשי קורא מסך: כותרות הדף משמשות למבנה הניווט בין שלבי ההזמנה, שגיאות
-        בטפסים מוכרזות כחלק מתיאור השדה (ולא רק ויזואלית), ועדכוני סטטוס דינמיים
-        (כגון אישור הזמנה) מוכרזים דרך אזור הכרזה ייעודי.</p>
     </section>
 
-    <section class="card stack">
-      <h2>מה טרם הונגש (מגבלות ידועות)</h2>
-      <p>אנו ממשיכים לשפר את נגישות האתר. נכון לעדכון זה, הפריטים הבאים טרם טופלו:</p>
+    <section class="prose" aria-labelledby="gaps-title">
+      <h2 id="gaps-title">חלקים שעדיין לא נגישים</h2>
+      <p>אנחנו ממשיכים לשפר. הפריטים הבאים ידועים לנו וטרם טופלו:</p>
       <ul>
-        <li>צ'יפים לסינון קטגוריות ותזונה בתפריט ההזמנה פועלים ככפתורי הדלקה/כיבוי
-          עצמאיים, ולא כקבוצת בחירה יחידה (radiogroup) כפי שמתאים להתנהגותם בפועל.</li>
+        <li>צ'יפים לסינון קטגוריות ותזונה בתפריט פועלים ככפתורי הדלקה/כיבוי עצמאיים, ולא כקבוצת בחירה יחידה, כפי שמתאים להתנהגותם בפועל.</li>
         <li>כאשר משנים כמה כמויות מנות ברצף מהיר, ייתכנו הכרזות חופפות לקורא מסך.</li>
-        <li>דפי הכניסה (/login/), "ההזמנות שלי" (/orders/) וממשק הניהול (/admin/) נותרו
-          כרגע באנגלית, ללא גרסה עברית מימין לשמאל כמו שאר האתר.</li>
+        <li>דפי הכניסה, "ההזמנות שלי" וממשק הניהול נותרו כרגע באנגלית, ללא גרסה עברית מימין לשמאל כמו שאר האתר.</li>
       </ul>
+      <p>אם נתקלתם בקושי נוסף, אפשר להזמין גם בדרך אחרת: <mark class="todo">יושלם: טלפון או דוא״ל של העסק להזמנה ללא האתר</mark>.</p>
     </section>
 
-    <section class="card stack">
-      <h2>יצירת קשר בנושאי נגישות</h2>
-      <p>
-        נתקלתם בבעיית נגישות באתר? נשמח לשמוע ולתקן.<br>
-        <strong>לפניות בנושא נגישות:</strong>
-        <!-- TODO: יש להחליף בכתובת מייל ו/או טלפון אמיתיים של העסק לפני פרסום האתר.
-             זהו מידע-מציין-מקום בלבד ואינו ערוץ קשר פעיל. -->
-        <a href="mailto:accessibility@yumm.ai">accessibility@yumm.ai</a>
-      </p>
+    <section class="prose" aria-labelledby="contact-title">
+      <h2 id="contact-title">פנייה בנושא נגישות</h2>
+      <p>מצאתם בעיה, או שיש לכם הצעה לשיפור? נשמח לשמוע ונטפל בפנייה.</p>
+      <dl class="contact-list">
+        <div><dt>רכז או רכזת נגישות</dt><dd><mark class="todo">יושלם: שם, או "אין רכז נגישות ייעודי, הפניות מטופלות על ידי בעל או בעלת העסק"</mark></dd></div>
+        <div><dt>טלפון</dt><dd dir="ltr"><mark class="todo">יושלם</mark></dd></div>
+        <div><dt>דוא״ל</dt><dd dir="ltr"><mark class="todo">יושלם</mark></dd></div>
+        <div><dt>זמן מענה</dt><dd><mark class="todo">יושלם: למשל "עד 5 ימי עסקים"</mark></dd></div>
+      </dl>
+    </section>
+
+    <section class="prose" aria-labelledby="exempt-title">
+      <h2 id="exempt-title">פטור מהתאמות</h2>
+      <p><mark class="todo">יושלם בהחלטת הבעלים: אם העסק פטור או פטור חלקי מחובת ההנגשה (למשל לפי מחזור שנתי), יש לציין כאן את עובדת הפטור ואת ההתאמות החלופיות. אם אין פטור, למחוק את הסעיף.</mark></p>
+    </section>
+
+    <section class="prose" aria-labelledby="updated-title">
+      <h2 id="updated-title">עדכון ההצהרה</h2>
+      <p>תאריך העדכון האחרון: <mark class="todo">יושלם</mark>.</p>
     </section>
   </main>
+
+  <footer class="foot">
+    <p class="wordmark"><bdi>yumm<span class="dot">.</span>ai</bdi></p>
+    <a class="small" href="/">לעמוד הבית</a>
+  </footer>
 </body>
 </html>
