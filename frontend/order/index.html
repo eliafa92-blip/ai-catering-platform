@@ -569,9 +569,36 @@
       document.querySelector(`#step-${step} h2`)?.focus({ preventScroll: true });
     }
 
+    // A lead row tracks interest even if the customer never submits. It's a disposable signal,
+    // not a draft order: a failure here must never block the real ordering flow.
+    async function trackStartedOrderLead() {
+      try {
+        // No ON CONFLICT here: the unique index is partial (only while open), which
+        // PostgREST's upsert can't target, so find-then-update/insert instead.
+        const { data: existing } = await supabase.from("leads").select("id")
+          .eq("customer_id", me.id).eq("source", "started_order").in("status", ["new", "contacted"])
+          .maybeSingle();
+        const payload = {
+          customer_id: me.id,
+          source: "started_order",
+          status: "new",
+          event_type: eventType(),
+          event_date: $("event-date").value || null,
+          details: { adults: num($("adults").value), children: num($("children").value) },
+        };
+        if (existing) await supabase.from("leads").update(payload).eq("id", existing.id);
+        else await supabase.from("leads").insert(payload);
+      } catch (error) {
+        console.warn("lead tracking failed (non-fatal)", error);
+      }
+    }
+
     $("back").onclick = () => go(state.step - 1);
     $("next").onclick = async () => {
-      if (state.step === 1) { if (validateEvent()) go(2); return; }
+      if (state.step === 1) {
+        if (validateEvent()) { go(2); trackStartedOrderLead(); }
+        return;
+      }
       if (state.step === 2) {
         if (!Object.keys(state.items).length) {
           $("next").textContent = "בחרו לפחות מנה אחת";
@@ -629,6 +656,10 @@
         if (sent.error) throw sent.error;
 
         try { localStorage.removeItem(DRAFT_KEY); } catch {}
+        // Best-effort: the lead has served its purpose once a real order is submitted.
+        supabase.from("leads").update({ status: "converted" })
+          .eq("customer_id", me.id).eq("source", "started_order").in("status", ["new", "contacted"])
+          .then(({ error }) => { if (error) console.warn("lead close failed (non-fatal)", error); });
         $("done-total").textContent = `סה"כ: ${money(sent.data.total)}`;
         ["step-1", "step-2", "step-3"].forEach((id) => ($(id).hidden = true));
         $("summary").hidden = true;

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leads</title>
+  <link rel="stylesheet" href="/css/base.css">
+</head>
+<body class="plain">
+  <header class="topbar">
+    <strong>Catering · Business</strong>
+    <a href="/admin/">Orders</a>
+    <span id="who" class="muted"></span>
+    <button id="signout" type="button" class="link">Sign out</button>
+  </header>
+  <main>
+    <h1 id="page-heading" tabindex="-1">Leads</h1>
+    <p class="muted">New and changed leads appear live. <span id="live" class="badge" aria-live="polite">connecting…</span></p>
+    <div class="filters" role="group" aria-label="Filter by status">
+      <button type="button" data-filter="open" aria-pressed="true">Open</button>
+      <button type="button" data-filter="all" aria-pressed="false">All</button>
+    </div>
+    <p id="error" class="error" role="alert" hidden></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Source</th>
+            <th scope="col">Name</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Details</th>
+            <th scope="col">Status</th>
+            <th scope="col">Created</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="leads"><tr><td colspan="7" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+  <div id="announce" class="visually-hidden" aria-live="polite" role="status"></div>
+  <script type="module">
+    import { requireUser, signOut, LEAD_SOURCE_LABELS, LEAD_STATUS_LABELS } from "/js/supabase.js";
+    import { announce } from "/js/lib/announce.js";
+
+    const { supabase, user } = await requireUser({ owner: true });
+    document.getElementById("who").textContent = user.email;
+    document.getElementById("signout").onclick = signOut;
+    const body = document.getElementById("leads");
+    const errorEl = document.getElementById("error");
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    let filter = "open";
+
+    const SOURCE_ICON = { contact_form: "📞", started_order: "🛒" };
+    const fmtDate = (s) => (s ? new Date(s).toLocaleDateString("en-GB") : "—");
+
+    function detailsFor(lead) {
+      const parts = [];
+      if (lead.event_type) parts.push(esc(lead.event_type));
+      if (lead.event_date) parts.push(fmtDate(lead.event_date));
+      if (lead.details?.adults != null) parts.push(`${lead.details.adults}+${lead.details.children ?? 0} guests`);
+      if (lead.note) parts.push(esc(lead.note));
+      return parts.join(" · ") || "—";
+    }
+
+    function actionsFor(lead) {
+      const buttons = [];
+      if (lead.status !== "contacted") buttons.push(`<button type="button" data-id="${lead.id}" data-to="contacted">Mark contacted</button>`);
+      if (lead.status !== "converted") buttons.push(`<button type="button" data-id="${lead.id}" data-to="converted">Converted</button>`);
+      if (lead.status !== "closed") buttons.push(`<button type="button" data-id="${lead.id}" data-to="closed" class="secondary">Close</button>`);
+      return buttons.join(" ");
+    }
+
+    async function load() {
+      let query = supabase
+        .from("leads")
+        .select("id, source, status, full_name, phone, event_type, event_date, note, details, created_at, customers(full_name, phone)")
+        .order("created_at", { ascending: false });
+      if (filter === "open") query = query.in("status", ["new", "contacted"]);
+      const { data, error } = await query;
+      if (error) return showError(error.message);
+      body.innerHTML = data.length
+        ? data.map((l) => `<tr>
+            <td>${SOURCE_ICON[l.source] ?? ""} ${esc(LEAD_SOURCE_LABELS[l.source] ?? l.source)}</td>
+            <td>${esc(l.full_name ?? l.customers?.full_name)}</td>
+            <td>${esc(l.phone ?? l.customers?.phone)}</td>
+            <td>${detailsFor(l)}</td>
+            <td><span class="status status-${l.status}">${esc(LEAD_STATUS_LABELS[l.status] ?? l.status)}</span></td>
+            <td>${fmtDate(l.created_at)}</td>
+            <td>${actionsFor(l)}</td></tr>`).join("")
+        : `<tr><td colspan="7" class="muted">Nothing here.</td></tr>`;
+    }
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.hidden = false;
+    }
+
+    body.addEventListener("click", async (event) => {
+      const b = event.target.closest("button[data-to]");
+      if (!b) return;
+      errorEl.hidden = true;
+      b.disabled = true;
+      const { error } = await supabase.from("leads").update({ status: b.dataset.to }).eq("id", b.dataset.id);
+      if (error) {
+        b.disabled = false;
+        return showError(error.message);
+      }
+      await load();
+      // The table rebuild (innerHTML) destroys the clicked button and would otherwise drop
+      // keyboard focus to <body>; move it to a stable landmark instead.
+      document.getElementById("page-heading").focus();
+      announce(`Lead marked ${LEAD_STATUS_LABELS[b.dataset.to] ?? b.dataset.to}`);
+    });
+
+    document.querySelectorAll("[data-filter]").forEach((b) =>
+      b.addEventListener("click", async () => {
+        filter = b.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+        await load();
+      })
+    );
+
+    await load();
+
+    supabase
+      .channel("all-leads")
+      .on("postgres_changes", { event: "*", schema: "public", table: "leads" }, () => {
+        load();
+        announce("Leads updated");
+      })
+      .subscribe((status) => {
+        document.getElementById("live").textContent = status === "SUBSCRIBED" ? "live" : status.toLowerCase();
+      });
+  </script>
+</body>
+</html>

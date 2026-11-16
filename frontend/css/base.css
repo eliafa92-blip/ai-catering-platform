@@ -348,5 +348,9 @@ fieldset { border: 0; margin: 0; padding: 0; min-inline-size: 0; }
 .status-pending_approval { color: var(--color-warning); }
 .status-approved { color: var(--color-success); }
 .status-rejected { color: var(--color-danger); }
+.status-new { color: var(--color-warning); }
+.status-contacted { color: var(--color-accent); }
+.status-converted { color: var(--color-success); }
+.status-closed { color: var(--color-muted); }
 @keyframes flash { from { background: var(--color-warning-soft); } to { background: transparent; } }
 .flash { animation: flash 2s ease-out; }

@@ -134,6 +134,58 @@
       <a class="btn btn-primary btn-lg" href="/customer/">תכננו את האירוע</a>
     </section>
 
+    <!-- For visitors who aren't ready to build a full order yet. No account needed; the lead
+         goes straight to the business's leads board. -->
+    <section class="section contact reveal" aria-labelledby="contact-title">
+      <h2 id="contact-title">לא מוכנים להזמין עכשיו?</h2>
+      <p class="lead">השאירו פרטים ונחזור אליכם.</p>
+
+      <form id="contact-form" class="contact-grid" novalidate>
+        <div class="field">
+          <label for="c-name">שם</label>
+          <input class="input" id="c-name" name="full_name" type="text" autocomplete="name" required aria-required="true" aria-describedby="c-name-error">
+          <p class="error" id="c-name-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="c-phone">טלפון</label>
+          <input class="input" id="c-phone" name="phone" type="tel" autocomplete="tel" required aria-required="true" aria-describedby="c-phone-error">
+          <p class="error" id="c-phone-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="c-date">תאריך משוער לאירוע</label>
+          <input class="input" id="c-date" name="event_date" type="date">
+          <p class="hint">אופציונלי, אם כבר יש לכם תאריך בראש.</p>
+        </div>
+        <div class="field">
+          <label for="c-type">סוג אירוע</label>
+          <select class="input" id="c-type" name="event_type">
+            <option value="">בחרו…</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="c-referral">איך הגעתם אלינו?</label>
+          <select class="input" id="c-referral" name="referral_source">
+            <option value="">בחרו…</option>
+            <option value="google">גוגל</option>
+            <option value="social">רשתות חברתיות</option>
+            <option value="referral">המלצה מחבר או חברה</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+        <div class="field contact-note">
+          <label for="c-note">הערה</label>
+          <textarea class="input" id="c-note" name="note" rows="3" placeholder="ספרו לנו עוד, אם תרצו"></textarea>
+        </div>
+        <div class="contact-actions">
+          <button class="btn btn-primary" type="submit">שליחה</button>
+        </div>
+      </form>
+
+      <div id="contact-done" class="contact-done" hidden>
+        <p>תודה! קיבלנו את הפרטים ונחזור אליכם בהקדם.</p>
+      </div>
+    </section>
+
   </main>
 
   <footer class="foot">
@@ -146,6 +198,9 @@
     </nav>
   </footer>
 
+  <div id="announce" class="visually-hidden" aria-live="polite" role="status"></div>
+
   <script type="module" src="/js/landing.js"></script>
+  <script type="module" src="/js/landing-contact.js"></script>
 </body>
 </html>

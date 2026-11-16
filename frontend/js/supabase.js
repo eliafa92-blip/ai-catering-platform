@@ -50,5 +50,17 @@ export const STATUS_LABELS = {
   rejected: "Rejected",
 };
 
+export const LEAD_SOURCE_LABELS = {
+  contact_form: "Contact form",
+  started_order: "Started an order",
+};
+
+export const LEAD_STATUS_LABELS = {
+  new: "New",
+  contacted: "Contacted",
+  converted: "Converted",
+  closed: "Closed",
+};
+
 export const money = (value) =>
   value == null ? "—" : new Intl.NumberFormat("he-IL", { style: "currency", currency: "ILS" }).format(value);

@@ -121,6 +121,15 @@ main { max-width: none; padding: 0; }
 .lproposal .actions { display: flex; gap: var(--space-2); }
 .lproposal .actions .btn { flex: 1; }
 
+/* ---------- "leave your details" contact section ---------- */
+.contact-grid { display: grid; gap: var(--space-4); margin-block-start: var(--space-6); max-width: 640px; }
+.contact-note { grid-column: 1 / -1; }
+.contact-actions { grid-column: 1 / -1; }
+.contact-done { margin-block-start: var(--space-6); max-width: 640px; }
+@media (min-width: 640px) {
+  .contact-grid { grid-template-columns: 1fr 1fr; }
+}
+
 /* ---------- closing CTA + footer ---------- */
 .cta { text-align: center; padding-block: var(--space-12); display: grid; justify-items: center; gap: var(--space-4); }
 .cta h2 { margin: 0; }

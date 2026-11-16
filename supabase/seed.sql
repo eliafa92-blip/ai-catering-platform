@@ -9,6 +9,7 @@
 -- ============================================================ reset
 truncate public.ai_messages, public.ai_change_proposals, public.ai_conversations,
          public.order_status_history, public.order_items, public.orders, public.events,
+         public.leads,
          public.quantity_rules, public.dish_allergens, public.dish_dietary, public.dishes,
          public.dish_categories, public.allergens, public.delivery_zones, public.time_slots,
          public.blocked_dates, public.business_settings
@@ -267,6 +268,53 @@ begin
 end;
 $$;
 
+-- ============================================================ part 3: leads
+do $$
+declare
+  first_names text[] := array['נועה','יוסי','מיכל','אבי','שירה','דניאל','רונית','עומר'];
+  last_names  text[] := array['כהן','לוי','מזרחי','פרץ','ביטון','אברהם'];
+  event_types text[] := array['בר מצווה','בת מצווה','יום הולדת','חתונה קטנה','אירוסין'];
+  referrals   text[] := array['google','social','referral','other'];
+  notes text[] := array['מחפשים משהו טבעוני ברובו', 'כ-50 איש, עדיין לא סגרנו תאריך',
+                         'ראינו אתכם באינסטגרם, נשמח לפרטים', null];
+  c record;
+begin
+  perform setseed(0.77);
+
+  -- Contact-form leads: anonymous, no customer_id.
+  for i in 1..6 loop
+    insert into public.leads (source, status, full_name, phone, event_type, event_date, referral_source, note, created_at)
+    values (
+      'contact_form',
+      (array['new','new','new','contacted','converted','closed']::public.lead_status[])[i],
+      first_names[1 + floor(random() * array_length(first_names, 1))::int] || ' ' ||
+        last_names[1 + floor(random() * array_length(last_names, 1))::int],
+      '05' || (2 + floor(random() * 3))::int || '-' || lpad((floor(random() * 10000000))::int::text, 7, '0'),
+      event_types[1 + floor(random() * array_length(event_types, 1))::int],
+      case when random() < 0.6 then current_date + floor(random() * 90)::int end,
+      referrals[1 + floor(random() * array_length(referrals, 1))::int],
+      notes[1 + floor(random() * array_length(notes, 1))::int],
+      now() - make_interval(days => floor(random() * 14)::int)
+    );
+  end loop;
+
+  -- started_order leads: tied to a few existing customers who have a login (demo users),
+  -- left open (new/contacted) so /admin/leads/ shows them by default.
+  for c in select * from public.customers where auth_user_id is not null order by created_at limit 3 loop
+    insert into public.leads (source, status, customer_id, event_type, event_date, details, created_at)
+    values (
+      'started_order',
+      (case when random() < 0.5 then 'new' else 'contacted' end)::public.lead_status,
+      c.id,
+      event_types[1 + floor(random() * array_length(event_types, 1))::int],
+      current_date + floor(random() * 60)::int,
+      jsonb_build_object('adults', 20 + floor(random() * 60)::int, 'children', floor(random() * 10)::int),
+      now() - make_interval(hours => floor(random() * 72)::int)
+    );
+  end loop;
+end;
+$$;
+
 -- Summary
 select 'customers' as table_name, count(*) from public.customers
 union all select 'events', count(*) from public.events
@@ -275,4 +323,5 @@ union all select 'order_items', count(*) from public.order_items
 union all select 'order_status_history', count(*) from public.order_status_history
 union all select 'dishes', count(*) from public.dishes
 union all select 'ai_messages', count(*) from public.ai_messages
-union all select 'ai_change_proposals', count(*) from public.ai_change_proposals;
+union all select 'ai_change_proposals', count(*) from public.ai_change_proposals
+union all select 'leads: ' || source || '/' || status, count(*) from public.leads group by source, status;
